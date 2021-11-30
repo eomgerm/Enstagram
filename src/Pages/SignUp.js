@@ -13,10 +13,9 @@ import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
 import { authService } from '../FirebaseConfig';
-import { Link as RRLink } from 'react-router-dom';
+import { Link as RRLink, useNavigate } from 'react-router-dom';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const PASSWORD_REGEXT = /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+])(?!.*[^a-zA-z0-9$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
@@ -30,7 +29,21 @@ const textInputTheme = createTheme({
 	},
 });
 
-const loginBtnTheme = createTheme({
+const googleLoginBtn = createTheme({
+	palette: {
+		primary: {
+			main: grey[400],
+		},
+	},
+	typography: {
+		fontFamily: '"Noto Sans KR", sans-serif',
+		button: {
+			textTransform: 'none',
+		},
+	},
+});
+
+const signUpBtn = createTheme({
 	palette: {
 		primary: {
 			main: blue[500],
@@ -38,11 +51,15 @@ const loginBtnTheme = createTheme({
 	},
 	typography: {
 		fontFamily: '"Noto Sans KR", sans-serif',
+		button: {
+			textTransform: 'none',
+		},
 	},
 });
 
-export default function Auth() {
+export default function SignUp() {
 	const [isPWShown, setIsPWShown] = useState(false);
+
 	const {
 		handleSubmit,
 		formState: { errors },
@@ -50,22 +67,26 @@ export default function Auth() {
 	} = useForm({
 		defaultValues: {
 			email: '',
+			name: '',
+			nickname: '',
 			password: '',
 		},
 	});
 
-	const handleClickShowPassword = () => {
-		setIsPWShown((prev) => !prev);
-	};
+	const handleClickShowPassword = () => setIsPWShown((prev) => !prev);
 
-	const handleClickLogin = async (data) => {
-		const { email, password } = data;
-		await signInWithEmailAndPassword(authService, email, password);
-	};
+	const navigate = useNavigate();
 
 	const handleClickGoogleLogin = async () => {
 		const provider = new GoogleAuthProvider();
 		await signInWithPopup(authService, provider);
+		navigate('/');
+	};
+
+	const handleClickSignUp = async (data) => {
+		const { email, password } = data;
+		await createUserWithEmailAndPassword(authService, email, password);
+		navigate('/', { replace: true });
 	};
 
 	return (
@@ -98,18 +119,33 @@ export default function Auth() {
 						alt="logo"
 					/>
 				</Container>
+				<Typography sx={{ color: 'grey.600', textAlign: 'center' }}>
+					친구들의 사진과 동영상을 보려면
+				</Typography>
+				<Typography sx={{ color: 'grey.600', textAlign: 'center' }}>가입하세요.</Typography>
+				<ThemeProvider theme={googleLoginBtn}>
+					<Button
+						onClick={handleClickGoogleLogin}
+						sx={{ mt: '15px', mb: '15px' }}
+						variant="contained"
+					>
+						Google로 로그인
+					</Button>
+				</ThemeProvider>
+				<Divider sx={{ mb: '10px' }}>
+					<Typography variant="caption">또는</Typography>
+				</Divider>
 				<Controller
 					name="email"
 					control={control}
 					render={({ field: { onChange, value } }) => (
 						<ThemeProvider theme={textInputTheme}>
 							<TextField
-								size="small"
-								id="email"
-								label="이메일"
-								variant="outlined"
+								margin="dense"
+								label="이메일 주소"
 								value={value}
 								onChange={onChange}
+								size="small"
 								helperText={errors?.email?.message}
 								error={errors?.email && true}
 							/>
@@ -119,6 +155,36 @@ export default function Auth() {
 						required: { value: true, message: '이메일을 입력하세요.' },
 						pattern: { value: EMAIL_REGEX, message: '올바른 이메일 형식이 아닙니다.' },
 					}}
+				/>
+				<Controller
+					name="name"
+					control={control}
+					render={({ field: { onChange, value } }) => (
+						<ThemeProvider theme={textInputTheme}>
+							<TextField
+								margin="dense"
+								label="이름"
+								value={value}
+								onChange={onChange}
+								size="small"
+							/>
+						</ThemeProvider>
+					)}
+				/>
+				<Controller
+					name="nickname"
+					control={control}
+					render={({ field: { onChange, value } }) => (
+						<ThemeProvider theme={textInputTheme}>
+							<TextField
+								margin="dense"
+								label="사용자 이름"
+								value={value}
+								onChange={onChange}
+								size="small"
+							/>
+						</ThemeProvider>
+					)}
 				/>
 				<Controller
 					name="password"
@@ -158,28 +224,11 @@ export default function Auth() {
 						maxLength: { value: 16, message: '비밀번호는 최대 16글자입니다.' },
 					}}
 				/>
-				<ThemeProvider theme={loginBtnTheme}>
-					<Button
-						onClick={handleSubmit(handleClickLogin)}
-						sx={{ margin: '10px 0 20px' }}
-						variant="contained"
-					>
-						로그인
+				<ThemeProvider theme={signUpBtn}>
+					<Button onClick={handleSubmit(handleClickSignUp)} variant="contained" sx={{ mt: '10px' }}>
+						가입하기
 					</Button>
 				</ThemeProvider>
-				<div>
-					<Divider>
-						<Typography variant="caption">또는</Typography>
-					</Divider>
-				</div>
-				<Stack sx={{ display: 'flex', mt: '20px', alignItems: 'center' }} spacing={2.5}>
-					<Link underline="none" component="button" onClick={handleClickGoogleLogin}>
-						<Typography sx={{ color: grey[700], fontSize: 14 }}>Google로 로그인</Typography>
-					</Link>
-					<Link underline="none">
-						<Typography sx={{ fontSize: 12 }}>비밀번호를 잊으셨나요?</Typography>
-					</Link>
-				</Stack>
 			</Box>
 			<Box
 				sx={{
@@ -195,9 +244,9 @@ export default function Auth() {
 				}}
 			>
 				<Container sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-					<Typography sx={{ fontSize: 15 }}>계정이 없으신가요?</Typography>
-					<Link component={RRLink} underline="none" sx={{ ml: 0.5 }} to="/signup">
-						<Typography sx={{ fontSize: 15 }}>가입하기</Typography>
+					<Typography sx={{ fontSize: 15 }}>게정이 있으신가요?</Typography>
+					<Link component={RRLink} underline="none" sx={{ ml: 0.5 }} to="/">
+						<Typography sx={{ fontSize: 15 }}>로그인</Typography>
 					</Link>
 				</Container>
 			</Box>
