@@ -80,13 +80,13 @@ export default function SignUp() {
 	const handleClickGoogleLogin = async () => {
 		const provider = new GoogleAuthProvider();
 		await signInWithPopup(authService, provider);
-		navigate('/');
+		navigate('/home');
 	};
 
 	const handleClickSignUp = async (data) => {
 		const { email, password } = data;
 		await createUserWithEmailAndPassword(authService, email, password);
-		navigate('/', { replace: true });
+		navigate('/home');
 	};
 
 	return (

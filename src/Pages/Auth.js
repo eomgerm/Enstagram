@@ -16,7 +16,7 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { authService } from '../FirebaseConfig';
-import { Link as RRLink } from 'react-router-dom';
+import { Link as RRLink, useNavigate } from 'react-router-dom';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const PASSWORD_REGEXT = /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+])(?!.*[^a-zA-z0-9$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
@@ -53,7 +53,8 @@ export default function Auth() {
 			password: '',
 		},
 	});
-
+	const navigate = useNavigate();
+	
 	const handleClickShowPassword = () => {
 		setIsPWShown((prev) => !prev);
 	};
@@ -61,11 +62,13 @@ export default function Auth() {
 	const handleClickLogin = async (data) => {
 		const { email, password } = data;
 		await signInWithEmailAndPassword(authService, email, password);
+		navigate('/home');
 	};
 
 	const handleClickGoogleLogin = async () => {
 		const provider = new GoogleAuthProvider();
 		await signInWithPopup(authService, provider);
+		navigate('/home');
 	};
 
 	return (
