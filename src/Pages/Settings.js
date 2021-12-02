@@ -1,11 +1,11 @@
 import SideNavigation from '../Components/SideNavigation';
 import Banner from '../Components/Banner';
 
-export default function Home() {
+export default function Settings() {
 	return (
 		<>
 			<Banner />
-			<SideNavigation currentPage="home" />
+			<SideNavigation currentPage="settings" />
 		</>
 	);
 }
