@@ -11,6 +11,13 @@ const NewPostButton = styled(Button)(({ theme }) => ({
 	display: 'flex',
 }));
 
-export default function CreateNewPostButton() {
-	return <NewPostButton startIcon={<AddIcon />}>새 게시물 추가</NewPostButton>;
+export default function CreateNewPostButton({ openModal }) {
+	const handleClickButton = () => {
+		openModal();
+	};
+	return (
+		<NewPostButton onClick={handleClickButton} startIcon={<AddIcon />}>
+			새 게시물 추가
+		</NewPostButton>
+	);
 }

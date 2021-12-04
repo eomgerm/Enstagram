@@ -9,8 +9,9 @@ import Stack from '@mui/material/Stack';
 import { useContext } from 'react';
 import { UserContext } from '../UserContext';
 
-export default function SideNavigation({ currentPage }) {
+export default function SideNavigation({currentPage}) {
 	const userObj = useContext(UserContext);
+	
 	return (
 		<Drawer
 			variant="persistent"

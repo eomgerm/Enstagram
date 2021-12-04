@@ -24,7 +24,7 @@ export default function MenuButton({ isCurrent, text, icon }) {
 	const iconName = isCurrent ? `${icon}Active` : icon;
 	return (
 		<ListItem disablePadding sx={{ color: isCurrent ? pink[500] : grey[400] }}>
-			<ListItemButton component={RRLink} to={`/${icon}`}>
+			<ListItemButton disableTouchRipple component={RRLink} to={`/${icon}`}>
 				<Box sx={{ my: 1.5, display: 'flex', pl: 2 }}>
 					{ICONS[iconName]}
 					<Typography sx={{ ml: 2 }}>{text}</Typography>

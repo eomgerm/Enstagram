@@ -9,7 +9,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 
-export default function Banner() {
+export default function Banner({ openModal }) {
 	return (
 		<AppBar
 			elevation={0}
@@ -33,7 +33,7 @@ export default function Banner() {
 					}}
 				>
 					<Search />
-					<CreateNewPostButton />
+					<CreateNewPostButton openModal={openModal} />
 				</Box>
 				<Divider orientation="vertical" flexItem />
 				<Stack direction="row" spacing={3} sx={{ px: 7 }}>

@@ -11,6 +11,7 @@ import Settings from './Pages/Settings';
 
 export default function AppRouter({ isLoggedIn }) {
 	const userObj = useContext(UserContext);
+	
 	return (
 		<BrowserRouter>
 			<Routes>
