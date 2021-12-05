@@ -13,7 +13,7 @@ export default function Home() {
 		<>
 			<Banner openModal={openModal}/>
 			<SideNavigation currentPage="home" />
-			<CreateNewPostModal open={modalOpen} closeModal={closeModal} />
+			<CreateNewPostModal modalOpen={modalOpen} closeModal={closeModal} />
 		</>
 	);
 }
