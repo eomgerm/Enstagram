@@ -55,7 +55,7 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 			openSnackBar();
 		}
 	};
-	
+
 	const openConfirmModal = () => setConfirmModalOpen(true);
 	const closeConfirmModal = () => setConfirmModalOpen(false);
 	const handleClose = () => {
@@ -106,8 +106,16 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 											height: '100%',
 											alignItems: 'center',
 											justifyContent: 'center',
+											flexDirection: 'column',
+											width: '100%',
+											position: 'relative'
 										}}
 									>
+										<Box sx={{display: 'flex',position: 'absolute', top: 0, right: 0}} >
+											<IconButton onClick={() => setAttachment('')} >
+												<CloseRoundedIcon />
+											</IconButton>
+										</Box>
 										<img src={attachment} width="100%" alt="첨부된 사진" />
 									</Box>
 								) : (
