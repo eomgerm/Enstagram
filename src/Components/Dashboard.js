@@ -1,28 +1,65 @@
-import MenuButtonList from './MenuButtonList';
+import * as React from 'react';
 import Drawer from '@mui/material/Drawer';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import MenuButtonList from './MenuButtonList';
 import Container from '@mui/material/Container';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import { useContext } from 'react';
 import { UserContext } from '../UserContext';
-import Banner from './Banner';
-import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
+import Search from '../Components/Search';
+import CreateNewPostButton from '../Components/CreateNewPostButton';
 
-export default function SideNavigation({ currentPage }) {
+const drawerWidth = 300;
+
+export default function Dashboard({ openModal, currentPage, children }) {
 	const userObj = useContext(UserContext);
 
 	return (
 		<Box sx={{ display: 'flex' }}>
-			<Banner />
+			<AppBar
+				elevation={0}
+				position="fixed"
+				variant="outlined"
+				sx={{
+					width: 'calc(100% - 500px)',
+					ml: '300px',
+					mr: '200px',
+					backgroundColor: 'white',
+					borderTop: 0,
+					borderRight: 0,
+					borderLeft: 0,
+				}}
+			>
+				<Toolbar>
+					<Box
+						sx={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							flexGrow: 1,
+							px: 20,
+							height: '100%',
+						}}
+					>
+						<Search />
+						<CreateNewPostButton openModal={openModal} />
+					</Box>
+				</Toolbar>
+			</AppBar>
 			<Drawer
 				sx={{
-					width: 300,
+					width: drawerWidth,
 					flexShrink: 0,
 					'& .MuiDrawer-paper': {
-						width: 300,
+						width: drawerWidth,
 						boxSizing: 'border-box',
 					},
 				}}
@@ -72,10 +109,33 @@ export default function SideNavigation({ currentPage }) {
 				</Box>
 				<MenuButtonList currentPage={currentPage} />
 			</Drawer>
-			<Box sx={{ display: 'flex', flexGrow: 1 }}>
-				<Toolbar />
-				<Typography>hello</Typography>
-			</Box>
+			{children}
+			<Drawer
+				sx={{
+					width: 200,
+					flexShrink: 0,
+					'& .MuiDrawer-paper': {
+						width: 200,
+						boxSizing: 'border-box',
+					},
+				}}
+				variant="permanent"
+				anchor="right"
+			>
+				<Toolbar sx={{ display: 'flex', justifyContent: 'center' }}>
+					<Box>
+						<Stack direction="row" spacing={3}>
+							<IconButton sx={{ border: 1, borderColor: 'grey.300' }}>
+								<SendRoundedIcon sx={{ transform: 'rotate(-35deg)' }} />
+							</IconButton>
+							<IconButton sx={{ border: 1, borderColor: 'grey.300' }}>
+								<NotificationsRoundedIcon />
+							</IconButton>
+						</Stack>
+					</Box>
+				</Toolbar>
+				<Divider />
+			</Drawer>
 		</Box>
 	);
 }

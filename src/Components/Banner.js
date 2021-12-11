@@ -18,9 +18,11 @@ export default function Banner({ openModal }) {
 				borderBottom: 1,
 				borderColor: 'grey.200',
 				width: 'calc(100% - 300px)',
+				ml: 300
 			}}
+			position="fixed"
 		>
-			<Toolbar disableGutters>
+			<Toolbar >
 				<Box
 					sx={{
 						display: 'flex',
