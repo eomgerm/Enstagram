@@ -27,7 +27,7 @@ export default function MenuButton({ isCurrent, text, icon }) {
 			<ListItemButton disableTouchRipple component={RRLink} to={`/${icon}`}>
 				<Box sx={{ my: 1.5, display: 'flex', pl: 2 }}>
 					{ICONS[iconName]}
-					<Typography sx={{ ml: 2 }}>{text}</Typography>
+					<Typography sx={{ ml: 2, fontWeight: 'medium' }}>{text}</Typography>
 				</Box>
 			</ListItemButton>
 		</ListItem>

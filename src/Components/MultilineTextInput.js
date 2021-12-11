@@ -24,10 +24,18 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 	},
 }));
 
-export default function MultilineTextInput () {
+export default function MultilineTextInput({ onChange, value }) {
 	return (
 		<TextInputContainer>
-			<StyledInputBase multiline placeholder="문구 입력..." minRows={7} maxRows={7} autoFocus />
+			<StyledInputBase
+				multiline
+				placeholder="문구 입력..."
+				minRows={7}
+				maxRows={7}
+				autoFocus
+				onChange={onChange}
+				value={value}
+			/>
 		</TextInputContainer>
 	);
 }

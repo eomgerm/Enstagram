@@ -23,6 +23,7 @@ export default function ConfirmModal({ open, closeModal, closeParentModal }) {
 					borderRadius: 3,
 					flexDirection: 'column',
 				}}
+			style={{outline: 'none'}}
 			>
 				<Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', my: 3, mx: 8 }}>
 					<Typography sx={{ fontWeight: 800, fontSize: 20 }}>게시물을 삭제하시겠어요?</Typography>

@@ -15,6 +15,8 @@ const theme = createTheme({
 	},
 	typography: {
 		fontFamily: ['"Noto Sans KR"', 'sans-serif'].join(','),
+		body1: { fontWeight: 500 },
+		button: { fontWeight: 700 },
 	},
 });
 

@@ -13,7 +13,12 @@ import { UserContext } from '../UserContext';
 import ConfirmModal from '../Components/ConfirmModal';
 import MultilineTextInput from '../Components/MultilineTextInput';
 import UploadImageDropzone from '../Components/UploadImageDropzone';
-import ErrorSnackbar from '../Components/Snackbar';
+import Snackbar from '../Components/Snackbar';
+import { Controller, useForm } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadString, getDownloadURL } from 'firebase/storage';
+import { fsService, storageService } from '../FirebaseConfig';
 
 const style = {
 	position: 'absolute',
@@ -32,12 +37,25 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 	const userObj = useContext(UserContext);
 	const [attachment, setAttachment] = useState('');
 	const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-	const [snackbarOpen, setSnackBarOpen] = useState(false);
+	const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
+	const [successSnackBarOpen, setSuccesSnackBarOpen] = useState(false);
 
-	const openSnackBar = () => setSnackBarOpen(true);
-	const closeSnackBar = (event, reason) => {
+	const { handleSubmit, control, reset } = useForm({
+		defaultValues: {
+			text: '',
+		},
+	});
+
+	const openErrorSnackbar = () => setErrorSnackbarOpen(true);
+	const closeErrorSnackbar = (event, reason) => {
 		if (reason === 'clickaway') return;
-		setSnackBarOpen(false);
+		setErrorSnackbarOpen(false);
+	};
+
+	const openSuccessSnackbar = () => setSuccesSnackBarOpen(true);
+	const closeSuccessSnackbar = (event, reason) => {
+		if (reason === 'clickaway') return;
+		setSuccesSnackBarOpen(false);
 	};
 
 	const onFileChange = (files) => {
@@ -52,7 +70,7 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 		try {
 			reader.readAsDataURL(imgFile);
 		} catch (e) {
-			openSnackBar();
+			openErrorSnackbar();
 		}
 	};
 
@@ -61,6 +79,37 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 	const handleClose = () => {
 		closeModal();
 		setAttachment('');
+		reset({ text: '' });
+	};
+
+	const handleClickSubmit = async (data) => {
+		const attachmentRef = ref(storageService, `${userObj.uid}/${uuidv4()}`);
+		let attachmentURL = '';
+		if (attachment) {
+			try {
+				const res = await uploadString(attachmentRef, attachment, 'data_url');
+				attachmentURL = await getDownloadURL(res.ref);
+			} catch (e) {
+				console.log(e);
+			}
+		}
+
+		const newPost = {
+			createdAt: serverTimestamp(),
+			edited: false,
+			editedAt: null,
+			creatorID: userObj.uid,
+			text: data.text,
+			attachmentURL,
+		};
+		try {
+			await addDoc(collection(fsService, 'posts'), newPost);
+		} catch (e) {
+			console.log(e);
+		}
+
+		openSuccessSnackbar();
+		handleClose();
 	};
 
 	return (
@@ -75,7 +124,7 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 				}}
 			>
 				<Fade in={modalOpen}>
-					<Box sx={style}>
+					<Box sx={style} style={{outline:'none'}} >
 						<Box
 							sx={{
 								display: 'flex',
@@ -91,7 +140,12 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 								<CloseRoundedIcon />
 							</IconButton>
 							<Typography>새 게시물 만들기</Typography>
-							<Button>공유하기</Button>
+							<Button
+								onClick={handleSubmit(handleClickSubmit)}
+								disabled={attachment ? false : true}
+							>
+								공유하기
+							</Button>
 						</Box>
 						<Box style={{ display: 'flex', height: '100%' }}>
 							<Box
@@ -108,15 +162,15 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 											justifyContent: 'center',
 											flexDirection: 'column',
 											width: '100%',
-											position: 'relative'
+											position: 'relative',
 										}}
 									>
-										<Box sx={{display: 'flex',position: 'absolute', top: 0, right: 0}} >
-											<IconButton onClick={() => setAttachment('')} >
+										<Box sx={{ display: 'flex', position: 'absolute', top: 0, right: 0 }}>
+											<IconButton onClick={() => setAttachment('')}>
 												<CloseRoundedIcon />
 											</IconButton>
 										</Box>
-										<img src={attachment} width="100%" alt="첨부된 사진" />
+										<img src={attachment} alt="첨부된 사진" height="700px" />
 									</Box>
 								) : (
 									<UploadImageDropzone onFileChange={onFileChange} />
@@ -132,7 +186,13 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 										/>
 										<Typography>{userObj.displayName}</Typography>
 									</Box>
-									<MultilineTextInput />
+									<Controller
+										name="text"
+										control={control}
+										render={({ field: { onChange, value } }) => (
+											<MultilineTextInput onChange={onChange} value={value} />
+										)}
+									/>
 									<Divider sx={{ borderBottomWidth: 2 }} />
 								</Box>
 							) : (
@@ -159,7 +219,18 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 					</Box>
 				</Fade>
 			</Modal>
-			<ErrorSnackbar snackbarOpen={snackbarOpen} closeSnackBar={closeSnackBar} />
+			<Snackbar
+				snackbarOpen={errorSnackbarOpen}
+				closeSnackBar={closeErrorSnackbar}
+				severity="error"
+				text="지원하지 않는 파일입니다!"
+			/>
+			<Snackbar
+				snackbarOpen={successSnackBarOpen}
+				closeSnackBar={closeSuccessSnackbar}
+				severity="success"
+				text="게시물이 업로드 되었습니다!"
+			/>
 		</>
 	);
 }

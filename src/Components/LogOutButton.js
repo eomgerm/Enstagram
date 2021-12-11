@@ -19,7 +19,7 @@ export default function LogOutButton() {
 			<ListItemButton onClick={handleClickLogout}>
 				<Box sx={{ my: 1.5, display: 'flex', pl: 2 }}>
 					<LogoutIcon />
-					<Typography sx={{ ml: 2 }}>로그아웃</Typography>
+					<Typography sx={{ ml: 2, fontWeight: 'medium' }}>로그아웃</Typography>
 				</Box>
 			</ListItemButton>
 		</ListItem>
