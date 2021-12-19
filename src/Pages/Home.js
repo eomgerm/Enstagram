@@ -34,7 +34,7 @@ export default function Home() {
 	return (
 		<>
 			<Dashboard openModal={openModal} currentPage="home">
-				<Typography sx={{ fontWeight: 700, fontSize: 27, mb: 4 }}>피드</Typography>
+				<Typography sx={{ fontWeight: 700, fontSize: 27, mb: 3.5 }}>피드</Typography>
 				{posts.map((post) => (
 					<PostCard key={post.id} postObj={post} />
 				))}

@@ -24,79 +24,83 @@ export default function Direct() {
 	return (
 		<>
 			<Dashboard openModal={openModal} currentPage="direct">
-				<Box sx={{ height: '100%' }}>
-					<Typography sx={{ fontWeight: 700, fontSize: 27, mb: 4 }}>다이렉트</Typography>
-					<Paper variant='outlined' sx={{ height: 'calc(100vh - 200px)', minHeight: '500px', width: '40vw', minWidth: '40em' }}>
+				<Typography sx={{ fontWeight: 700, fontSize: 27, mb: 4 }}>다이렉트</Typography>
+				<Paper
+					variant="outlined"
+					sx={{
+						height: 'calc(100vh - 200px)',
+						minHeight: '500px',
+						width: '40vw',
+						minWidth: '40em',
+					}}
+				>
+					<Box
+						sx={{
+							display: 'flex',
+							flex: 1,
+							height: '100%',
+						}}
+					>
 						<Box
 							sx={{
 								display: 'flex',
-								flex: 1,
-								height: '100%',
+								flex: 2,
+								borderRight: 1,
+								flexDirection: 'column',
+								borderColor: 'grey.300',
 							}}
 						>
 							<Box
 								sx={{
 									display: 'flex',
-									flex: 2,
-									borderRight: 1,
-									flexDirection: 'column',
+									justifyContent: 'space-between',
+									alignItems: 'center',
+									px: 2,
+									py: 1,
+									borderBottom: 1,
 									borderColor: 'grey.300',
 								}}
 							>
-								<Box
-									sx={{
-										display: 'flex',
-										justifyContent: 'space-between',
-										alignItems: 'center',
-										px: 2,
-										py: 1,
-										borderBottom: 1,
-										borderColor: 'grey.300',
-									}}
-								>
-									<Box sx={{ width: '32px' }} />
-									<Box sx={{ display: 'flex', justifyContent: 'center' }}>
-										<Typography sx={{ m: 'auto' }}>{userObj.id}</Typography>
-									</Box>
-									<IconButton sx={{ justifyContent: 'flex-end' }}>
-										<MailOutlineRoundedIcon sx={{ color: 'black' }} />
-									</IconButton>
+								<Box sx={{ width: '32px' }} />
+								<Box sx={{ display: 'flex', justifyContent: 'center' }}>
+									<Typography sx={{ m: 'auto' }}>{userObj.id}</Typography>
 								</Box>
-								<Box
-									sx={{
-										display: 'flex',
-										flexDirection: 'column',
-										justifyContent: 'center',
-										alignItems: 'center',
-										height: '100%',
-									}}
-								>
-									<Typography sx={{ fontSize: 20, color: 'grey.500' }}>
-										대화를 나눈 계정이
-									</Typography>
-									<Typography sx={{ fontSize: 20, color: 'grey.500' }}>
-										여기에 표시됩니다
-									</Typography>
-								</Box>
+								<IconButton sx={{ justifyContent: 'flex-end' }}>
+									<MailOutlineRoundedIcon sx={{ color: 'black' }} />
+								</IconButton>
 							</Box>
 							<Box
 								sx={{
 									display: 'flex',
-									flex: 5,
 									flexDirection: 'column',
 									justifyContent: 'center',
 									alignItems: 'center',
 									height: '100%',
 								}}
 							>
-								<Typography sx={{ fontSize: 60 }}>💬</Typography>
-								<Typography sx={{ fontSize: 24 }}>내 메시지</Typography>
-								<Typography sx={{ color: 'grey.500' }}>친구에게 메시지를 보내보세요</Typography>
-								<Button variant='contained' startIcon={<EmailRoundedIcon />} sx={{px: 2.5, mt: 2}} >메시지 보내기</Button>
+								<Typography sx={{ fontSize: 20, color: 'grey.500' }}>대화를 나눈 계정이</Typography>
+								<Typography sx={{ fontSize: 20, color: 'grey.500' }}>여기에 표시됩니다</Typography>
 							</Box>
 						</Box>
-					</Paper>
-				</Box>
+						<Box
+							sx={{
+								display: 'flex',
+								flex: 5,
+								flexDirection: 'column',
+								justifyContent: 'center',
+								alignItems: 'center',
+								height: '100%',
+							}}
+						>
+							<Typography sx={{ fontSize: 60 }}>💬</Typography>
+							<Typography sx={{ fontSize: 24 }}>내 메시지</Typography>
+							<Typography sx={{ color: 'grey.500' }}>친구에게 메시지를 보내보세요</Typography>
+							<Button variant="contained" startIcon={<EmailRoundedIcon />} sx={{ px: 2.5, mt: 2 }}>
+								메시지 보내기
+							</Button>
+						</Box>
+					</Box>
+				</Paper>
 			</Dashboard>
 			<CreateNewPostModal modalOpen={modalOpen} closeModal={closeModal} />
 		</>
