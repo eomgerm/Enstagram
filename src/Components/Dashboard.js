@@ -46,7 +46,7 @@ export default function Dashboard({ openModal, currentPage, children }) {
 							display: 'flex',
 							justifyContent: 'space-between',
 							flexGrow: 1,
-							px: 20,
+							px: '10vw',
 							height: '100%',
 						}}
 					>
@@ -112,7 +112,10 @@ export default function Dashboard({ openModal, currentPage, children }) {
 				</Box>
 				<MenuButtonList currentPage={currentPage} />
 			</Drawer>
-			{children}
+			<Box sx={{ pt: 4, px: '15vw' }}>
+				<Toolbar />
+				{children}
+			</Box>
 			<Drawer
 				sx={{
 					width: 200,

@@ -24,10 +24,9 @@ export default function Direct() {
 	return (
 		<>
 			<Dashboard openModal={openModal} currentPage="direct">
-				<Box sx={{ pt: 4, px: 30, width: 'calc(100% - 500px)', height: '100%' }}>
-					<Toolbar />
+				<Box sx={{ height: '100%' }}>
 					<Typography sx={{ fontWeight: 700, fontSize: 27, mb: 4 }}>다이렉트</Typography>
-					<Paper variant='outlined' sx={{ height: 'calc(100vh - 200px)', minHeight: '500px' }}>
+					<Paper variant='outlined' sx={{ height: 'calc(100vh - 200px)', minHeight: '500px', width: '40vw', minWidth: '40em' }}>
 						<Box
 							sx={{
 								display: 'flex',

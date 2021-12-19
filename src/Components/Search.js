@@ -11,7 +11,8 @@ const SearchContainer = styled('div')(({ theme }) => ({
 		backgroundColor: alpha(grey[600], 0.25),
 	},
 	marginLeft: 0,
-	minWidth: '25em',
+	width: '18vw',
+	minWidth: '10vw',
 	display: 'flex',
 }));
 

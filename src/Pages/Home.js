@@ -34,13 +34,10 @@ export default function Home() {
 	return (
 		<>
 			<Dashboard openModal={openModal} currentPage="home">
-				<Box sx={{ pt: 4, px: 30, width: 'calc(100% - 500px)' }}>
-					<Toolbar />
-					<Typography sx={{ fontWeight: 700, fontSize: 27, mb: 4 }}>피드</Typography>
-					{posts.map((post) => (
-						<PostCard key={post.id} postObj={post} />
-					))}
-				</Box>
+				<Typography sx={{ fontWeight: 700, fontSize: 27, mb: 4 }}>피드</Typography>
+				{posts.map((post) => (
+					<PostCard key={post.id} postObj={post} />
+				))}
 			</Dashboard>
 			<CreateNewPostModal modalOpen={modalOpen} closeModal={closeModal} />
 		</>
