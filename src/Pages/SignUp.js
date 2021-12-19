@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { useForm, Controller } from 'react-hook-form';
@@ -14,8 +14,10 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
-import { authService } from '../FirebaseConfig';
+import { authService, fsService } from '../FirebaseConfig';
 import { Link as RRLink, useNavigate } from 'react-router-dom';
+import { setDoc, collection, doc } from 'firebase/firestore';
+import { UserContext } from '../UserContext';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const PASSWORD_REGEXT = /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+])(?!.*[^a-zA-z0-9$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
@@ -59,6 +61,7 @@ const signUpBtn = createTheme({
 
 export default function SignUp() {
 	const [isPWShown, setIsPWShown] = useState(false);
+	const [, setUserObj] = useContext(UserContext);
 
 	const {
 		handleSubmit,
@@ -67,8 +70,8 @@ export default function SignUp() {
 	} = useForm({
 		defaultValues: {
 			email: '',
-			name: '',
-			nickname: '',
+			id: '',
+			displayName: '',
 			password: '',
 		},
 	});
@@ -84,11 +87,22 @@ export default function SignUp() {
 	};
 
 	const handleClickSignUp = async (data) => {
-		const { email, password } = data;
+		const { email, password, id, displayName } = data;
 		await createUserWithEmailAndPassword(authService, email, password);
+		const user = authService.currentUser;
+		const userInfo = {
+			displayName,
+			email,
+			id,
+			isNewAccount: false,
+			photoURL: '',
+			uid: user.uid,
+		};
+		const userInfoRef = collection(fsService, 'userInfo');
+		await setDoc(doc(userInfoRef, user.uid), userInfo);
+		setUserObj(userInfo);
 		navigate('/home');
 	};
-
 	return (
 		<Container
 			sx={{
@@ -157,13 +171,13 @@ export default function SignUp() {
 					}}
 				/>
 				<Controller
-					name="name"
+					name="id"
 					control={control}
 					render={({ field: { onChange, value } }) => (
 						<ThemeProvider theme={textInputTheme}>
 							<TextField
 								margin="dense"
-								label="이름"
+								label="아이디"
 								value={value}
 								onChange={onChange}
 								size="small"
@@ -172,7 +186,7 @@ export default function SignUp() {
 					)}
 				/>
 				<Controller
-					name="nickname"
+					name="displayName"
 					control={control}
 					render={({ field: { onChange, value } }) => (
 						<ThemeProvider theme={textInputTheme}>
@@ -245,7 +259,7 @@ export default function SignUp() {
 			>
 				<Container sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
 					<Typography sx={{ fontSize: 15 }}>게정이 있으신가요?</Typography>
-					<Link component={RRLink} underline="none" sx={{ ml: 0.5 }} to="/">
+					<Link component={RRLink} underline="hover" sx={{ ml: 0.5 }} to="/">
 						<Typography sx={{ fontSize: 15 }}>로그인</Typography>
 					</Link>
 				</Container>

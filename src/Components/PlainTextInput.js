@@ -18,23 +18,32 @@ const TextInputContainer = styled('div')(({ theme }) => ({
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
 	color: grey[900],
 	'& .MuiInputBase-input': {
-		padding: theme.spacing(1, 1),
+		padding: theme.spacing(1.5, 1),
 		transition: theme.transitions.create('width'),
-		width: 'calc(20em - 8px)',
 	},
 }));
 
-export default function MultilineTextInput({ onChange, value }) {
+export default function PlainTextInput({
+	onChange,
+	value,
+	multiline,
+	placeholder,
+	endAdornment,
+	inputRef,
+}) {
 	return (
 		<TextInputContainer>
 			<StyledInputBase
-				multiline
-				placeholder="문구 입력..."
+				multiline={multiline}
+				placeholder={placeholder}
 				minRows={7}
 				maxRows={7}
 				autoFocus
 				onChange={onChange}
 				value={value}
+				endAdornment={endAdornment}
+				fullWidth
+				inputRef={inputRef}
 			/>
 		</TextInputContainer>
 	);

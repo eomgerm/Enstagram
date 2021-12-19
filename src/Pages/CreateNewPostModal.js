@@ -11,14 +11,21 @@ import Divider from '@mui/material/Divider';
 import Avatar from '@mui/material/Avatar';
 import { UserContext } from '../UserContext';
 import ConfirmModal from '../Components/ConfirmModal';
-import MultilineTextInput from '../Components/MultilineTextInput';
+import PlainTextInput from '../Components/PlainTextInput';
 import UploadImageDropzone from '../Components/UploadImageDropzone';
 import Snackbar from '../Components/Snackbar';
 import { Controller, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { setDoc, addDoc, collection, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { fsService, storageService } from '../FirebaseConfig';
+import CardMedia from '@mui/material/CardMedia';
+import { pink } from '@mui/material/colors';
+import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
+import usePlacesService from 'react-google-autocomplete/lib/usePlacesAutocompleteService';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 
 const style = {
 	position: 'absolute',
@@ -34,16 +41,23 @@ const style = {
 };
 
 export default function CreateNewPostModal({ modalOpen, closeModal }) {
-	const userObj = useContext(UserContext);
+	const [userObj, setUserObj] = useContext(UserContext);
 	const [attachment, setAttachment] = useState('');
 	const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 	const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
 	const [successSnackBarOpen, setSuccesSnackBarOpen] = useState(false);
+	const [locationText, setLocationText] = useState('');
+	const [placeID, setPlaceID] = useState('');
 
 	const { handleSubmit, control, reset } = useForm({
 		defaultValues: {
 			text: '',
 		},
+	});
+
+	const { placePredictions, getPlacePredictions, isPlacePredictionsLoading } = usePlacesService({
+		apiKey: 'AIzaSyBKVKRlPqY0t94Tzt7e8kCvGuLe7S6jmHI',
+		language: 'ko',
 	});
 
 	const openErrorSnackbar = () => setErrorSnackbarOpen(true);
@@ -77,9 +91,12 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 	const openConfirmModal = () => setConfirmModalOpen(true);
 	const closeConfirmModal = () => setConfirmModalOpen(false);
 	const handleClose = () => {
-		closeModal();
 		setAttachment('');
 		reset({ text: '' });
+		setPlaceID('');
+		setLocationText('');
+		getPlacePredictions({ input: '' });
+		closeModal();
 	};
 
 	const handleClickSubmit = async (data) => {
@@ -95,21 +112,55 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 		}
 
 		const newPost = {
-			createdAt: serverTimestamp(),
-			edited: false,
-			editedAt: null,
-			creatorID: userObj.uid,
-			text: data.text,
-			attachmentURL,
+			metadata: {
+				createdAt: serverTimestamp(),
+				edited: false,
+				editedAt: null,
+			},
+			creator: userObj,
+			body: {
+				attachmentURL,
+				text: data.text,
+				location: {
+					id: placeID,
+					text: locationText,
+				},
+			},
 		};
+
 		try {
 			await addDoc(collection(fsService, 'posts'), newPost);
+			const userInfoRef = collection(fsService, 'userInfo');
+			await setDoc(doc(userInfoRef, userObj.uid), { posts: userObj.posts + 1 }, { merge: true });
+			const userInfoSnap = await getDoc(doc(fsService, 'userInfo', userObj.uid));
+			const newUserInfo = userInfoSnap.data();
+			setUserObj(newUserInfo);
 		} catch (e) {
 			console.log(e);
 		}
 
 		openSuccessSnackbar();
 		handleClose();
+	};
+
+	const renderPlace = (placeObj) => {
+		const { description, terms, place_id } = placeObj;
+		const [first] = terms;
+		const { value: location } = first;
+
+		const address = description.length > 25 ? `${description.substring(0, 25)}…` : description;
+
+		return (
+			<ListItemButton
+				key={place_id}
+				onClick={() => {
+					setLocationText(location);
+					setPlaceID(place_id);
+				}}
+			>
+				<ListItemText primary={location} secondary={address} />
+			</ListItemButton>
+		);
 	};
 
 	return (
@@ -124,7 +175,7 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 				}}
 			>
 				<Fade in={modalOpen}>
-					<Box sx={style} style={{outline:'none'}} >
+					<Box sx={style} style={{ outline: 'none' }}>
 						<Box
 							sx={{
 								display: 'flex',
@@ -170,7 +221,12 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 												<CloseRoundedIcon />
 											</IconButton>
 										</Box>
-										<img src={attachment} alt="첨부된 사진" height="700px" />
+										<CardMedia
+											sx={{ borderBottomLeftRadius: '12px', objectFit: 'contain' }}
+											component="img"
+											src={attachment}
+											height="677px"
+										/>
 									</Box>
 								) : (
 									<UploadImageDropzone onFileChange={onFileChange} />
@@ -179,21 +235,45 @@ export default function CreateNewPostModal({ modalOpen, closeModal }) {
 							<Divider flexItem orientation="vertical" sx={{ borderRightWidth: 2 }} />
 							{attachment ? (
 								<Box sx={{ flexDirection: 'column', display: 'flex', width: '20em' }}>
-									<Box sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
+									<Box sx={{ display: 'flex', alignItems: 'center', px: 1, pt: 1 }}>
 										<Avatar
 											src={userObj.photoURL}
-											sx={{ width: 40, height: 40, border: 2, borderColor: 'grey.300', mr: 1 }}
-										/>
-										<Typography>{userObj.displayName}</Typography>
+											sx={{ width: 40, height: 40, mr: 1, bgColor: pink[400] }}
+										>
+											{userObj.displayName}
+										</Avatar>
+										<Typography sx={{ fontSize: 14 }}>@{userObj.id}</Typography>
 									</Box>
 									<Controller
 										name="text"
 										control={control}
 										render={({ field: { onChange, value } }) => (
-											<MultilineTextInput onChange={onChange} value={value} />
+											<PlainTextInput
+												placeholder="문구 입력..."
+												multiline
+												onChange={onChange}
+												value={value}
+											/>
 										)}
 									/>
 									<Divider sx={{ borderBottomWidth: 2 }} />
+									<PlainTextInput
+										placeholder="위치 입력"
+										endAdornment={<AddLocationAltOutlinedIcon fontSize="small" sx={{ mr: 1 }} />}
+										onChange={(event) => {
+											const {
+												target: { value },
+											} = event;
+											setLocationText(value);
+											getPlacePredictions({ input: value });
+										}}
+										value={locationText}
+									/>
+									<Divider sx={{ borderBottomWidth: 2 }} />
+									<List dense disablePadding>
+										{!isPlacePredictionsLoading &&
+											placePredictions.map((place) => renderPlace(place))}
+									</List>
 								</Box>
 							) : (
 								<Box

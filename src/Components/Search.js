@@ -11,10 +11,7 @@ const SearchContainer = styled('div')(({ theme }) => ({
 		backgroundColor: alpha(grey[600], 0.25),
 	},
 	marginLeft: 0,
-	width: '100%',
-	[theme.breakpoints.up('sm')]: {
-		width: 'auto',
-	},
+	minWidth: '25em',
 	display: 'flex',
 }));
 
@@ -37,9 +34,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 		paddingLeft: `calc(1em + ${theme.spacing(4)})`,
 		transition: theme.transitions.create('width'),
 		width: '100%',
-		[theme.breakpoints.up('md')]: {
-			width: '40ch',
-		},
 	},
 }));
 
@@ -49,7 +43,7 @@ export default function Search() {
 			<SearchIconWrapper>
 				<SearchIcon />
 			</SearchIconWrapper>
-			<StyledInputBase placeholder="검색" inputProps={{ 'aria-label': 'search' }} />
+			<StyledInputBase fullWidth placeholder="검색" inputProps={{ 'aria-label': 'search' }} />
 		</SearchContainer>
 	);
 }

@@ -2,10 +2,12 @@ import AppRouter from './AppRouter';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { blueGrey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
-import { authService } from './FirebaseConfig';
+import { authService, fsService } from './FirebaseConfig';
 import { useState, useEffect } from 'react';
 import Loading from './Pages/Loading';
 import { UserContext } from './UserContext';
+import { setDoc, collection, getDoc, doc } from 'firebase/firestore';
+import { blue } from '@mui/material/colors';
 
 const theme = createTheme({
 	palette: {
@@ -15,24 +17,62 @@ const theme = createTheme({
 	},
 	typography: {
 		fontFamily: ['"Noto Sans KR"', 'sans-serif'].join(','),
-		body1: { fontWeight: 500 },
 		button: { fontWeight: 700 },
+	},
+	components: {
+		MuiCssBaseline: {
+			styleOverrides: {
+				body: {
+					height: '100%',
+				},
+			},
+		},
+		MuiButton: {
+			styleOverrides: {
+				palette: {
+					primary: {
+						main: blue[500],
+					},
+				},
+				typography: {
+					fontFamily: '"Noto Sans KR", sans-serif',
+				},
+			},
+		},
 	},
 });
 
 export default function App() {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [userObj, setUserObj] = useState(null);
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [init, setInit] = useState(false);
 
 	useEffect(() => {
-		authService.onAuthStateChanged((user) => {
+		authService.onAuthStateChanged(async (user) => {
 			if (user) {
 				setIsLoggedIn(true);
-				setUserObj(user);
+				const userInfoSnap = await getDoc(doc(fsService, 'userInfo', user.uid));
+				let userInfo = userInfoSnap.data();
+				if (!userInfo) {
+					const userInfoRef = collection(fsService, 'userInfo');
+					const newUserInfo = {
+						email: user.email,
+						displayName: user.displayName,
+						isNewAccount: true,
+						id: '',
+						uid: user.uid,
+						photoURL: user.photoURL,
+						posts: 0,
+						followers: 0,
+						followings: 0,
+					};
+					await setDoc(doc(userInfoRef, user.uid), newUserInfo);
+					userInfo = newUserInfo;
+				}
+				setUserObj(userInfo);
 			} else {
-				setIsLoggedIn(false);
 				setUserObj(null);
+				setIsLoggedIn(false);
 			}
 			setInit(true);
 		});
@@ -41,15 +81,9 @@ export default function App() {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			{init ? (
-				<>
-					<UserContext.Provider value={userObj}>
-						<AppRouter isLoggedIn={isLoggedIn} />
-					</UserContext.Provider>
-				</>
-			) : (
-				<Loading />
-			)}
+			<UserContext.Provider value={[userObj, setUserObj]}>
+				{init ? <AppRouter isLoggedIn={isLoggedIn} /> : <Loading />}
+			</UserContext.Provider>
 		</ThemeProvider>
 	);
 }

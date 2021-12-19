@@ -30,17 +30,6 @@ const textInputTheme = createTheme({
 	},
 });
 
-const loginBtnTheme = createTheme({
-	palette: {
-		primary: {
-			main: blue[500],
-		},
-	},
-	typography: {
-		fontFamily: '"Noto Sans KR", sans-serif',
-	},
-});
-
 export default function Auth() {
 	const [isPWShown, setIsPWShown] = useState(false);
 	const {
@@ -54,7 +43,7 @@ export default function Auth() {
 		},
 	});
 	const navigate = useNavigate();
-	
+
 	const handleClickShowPassword = () => {
 		setIsPWShown((prev) => !prev);
 	};
@@ -68,7 +57,7 @@ export default function Auth() {
 	const handleClickGoogleLogin = async () => {
 		const provider = new GoogleAuthProvider();
 		await signInWithPopup(authService, provider);
-		navigate('/home');
+		navigate('/google-login');
 	};
 
 	return (
@@ -161,15 +150,13 @@ export default function Auth() {
 						maxLength: { value: 16, message: '비밀번호는 최대 16글자입니다.' },
 					}}
 				/>
-				<ThemeProvider theme={loginBtnTheme}>
-					<Button
-						onClick={handleSubmit(handleClickLogin)}
-						sx={{ margin: '10px 0 20px' }}
-						variant="contained"
-					>
-						로그인
-					</Button>
-				</ThemeProvider>
+				<Button
+					onClick={handleSubmit(handleClickLogin)}
+					sx={{ margin: '10px 0 20px' }}
+					variant="contained"
+				>
+					로그인
+				</Button>
 				<div>
 					<Divider>
 						<Typography variant="caption">또는</Typography>
@@ -199,7 +186,7 @@ export default function Auth() {
 			>
 				<Container sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
 					<Typography sx={{ fontSize: 15 }}>계정이 없으신가요?</Typography>
-					<Link component={RRLink} underline="none" sx={{ ml: 0.5 }} to="/signup">
+					<Link component={RRLink} underline="hover" sx={{ ml: 0.5 }} to="/signup">
 						<Typography sx={{ fontSize: 15 }}>가입하기</Typography>
 					</Link>
 				</Container>

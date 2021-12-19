@@ -26,7 +26,7 @@ export default function ConfirmModal({ open, closeModal, closeParentModal }) {
 			style={{outline: 'none'}}
 			>
 				<Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', my: 3, mx: 8 }}>
-					<Typography sx={{ fontWeight: 800, fontSize: 20 }}>게시물을 삭제하시겠어요?</Typography>
+					<Typography sx={{ fontWeight: 700, fontSize: 20 }}>게시물 삭제하시겠어요?</Typography>
 					<Typography sx={{ fontSize: 14, color: 'grey.500', mt: 1 }}>
 						지금 나가면 변경사항을 잃게됩니다.
 					</Typography>

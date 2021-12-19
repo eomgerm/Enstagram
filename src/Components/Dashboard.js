@@ -17,11 +17,12 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import Search from '../Components/Search';
 import CreateNewPostButton from '../Components/CreateNewPostButton';
+import { pink } from '@mui/material/colors';
 
 const drawerWidth = 300;
 
 export default function Dashboard({ openModal, currentPage, children }) {
-	const userObj = useContext(UserContext);
+	const [userObj] = useContext(UserContext);
 
 	return (
 		<Box sx={{ display: 'flex' }}>
@@ -85,25 +86,27 @@ export default function Dashboard({ openModal, currentPage, children }) {
 					>
 						<Avatar
 							src={userObj.photoURL}
-							sx={{ width: 85, height: 85, border: 2, borderColor: 'grey.300' }}
-						/>
+							sx={{ width: 85, height: 85, bgcolor: pink[400], fontSize: 40 }}
+						>
+							{userObj.displayName[0]}
+						</Avatar>
 						<Typography sx={{ fontWeight: 600, mt: 1 }}>{userObj.displayName}</Typography>
-						<Typography sx={{ fontSize: 11, color: 'grey.400', fontWeight: 400 }}>
-							@id_1234
+						<Typography sx={{ fontSize: 11, color: 'grey.500', fontWeight: 400 }}>
+							@{userObj.id}
 						</Typography>
 					</Container>
 					<Stack direction="row" spacing={6} sx={{ justifyContent: 'center', mt: 4, mb: 4 }}>
 						<Box sx={{ display: 'flex', textAlign: 'center', flexDirection: 'column' }}>
-							<Typography sx={{ fontSize: 14, fontWeight: 600 }}>578</Typography>
-							<Typography sx={{ fontSize: 10, color: 'grey.400' }}>게시물</Typography>
+							<Typography sx={{ fontSize: 14, fontWeight: 600 }}>{userObj.posts}</Typography>
+							<Typography sx={{ fontSize: 10, color: 'grey.500' }}>게시물</Typography>
 						</Box>
 						<Box sx={{ display: 'flex', textAlign: 'center', flexDirection: 'column' }}>
-							<Typography sx={{ fontSize: 14, fontWeight: 600 }}>37.2k</Typography>
-							<Typography sx={{ fontSize: 10, color: 'grey.400' }}>팔로워</Typography>
+							<Typography sx={{ fontSize: 14, fontWeight: 600 }}>{userObj.followers}</Typography>
+							<Typography sx={{ fontSize: 10, color: 'grey.500' }}>팔로워</Typography>
 						</Box>
 						<Box sx={{ display: 'flex', textAlign: 'center', flexDirection: 'column' }}>
-							<Typography sx={{ fontSize: 14, fontWeight: 600 }}>989</Typography>
-							<Typography sx={{ fontSize: 10, color: 'grey.400' }}>팔로잉</Typography>
+							<Typography sx={{ fontSize: 14, fontWeight: 600 }}>{userObj.followings}</Typography>
+							<Typography sx={{ fontSize: 10, color: 'grey.500' }}>팔로잉</Typography>
 						</Box>
 					</Stack>
 				</Box>
