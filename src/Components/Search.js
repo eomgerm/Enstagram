@@ -38,13 +38,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 	},
 }));
 
-export default function Search() {
+export default function Search({value,onChange}) {
 	return (
 		<SearchContainer>
 			<SearchIconWrapper>
 				<SearchIcon />
 			</SearchIconWrapper>
-			<StyledInputBase fullWidth placeholder="검색" inputProps={{ 'aria-label': 'search' }} />
+			<StyledInputBase fullWidth placeholder="검색" value={value} onChange={onChange} />
 		</SearchContainer>
 	);
 }

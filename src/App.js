@@ -22,8 +22,13 @@ const theme = createTheme({
 	components: {
 		MuiCssBaseline: {
 			styleOverrides: {
+				html: {
+					height: '100%',
+					width: '100%',
+				},
 				body: {
 					height: '100%',
+					width: '100%',
 				},
 			},
 		},
@@ -65,6 +70,7 @@ export default function App() {
 						posts: 0,
 						followers: 0,
 						followings: 0,
+						searchKeys: [],
 					};
 					await setDoc(doc(userInfoRef, user.uid), newUserInfo);
 					userInfo = newUserInfo;

@@ -4,9 +4,9 @@ import { styled } from '@mui/material/styles';
 
 const NewPostButton = styled(Button)(({ theme }) => ({
 	color: theme.palette.getContrastText('rgb(240, 98, 146)'),
-	background: 'linear-gradient(130deg, rgba(251,140,0,1) 0%, rgba(240,98,146,1) 75%)',
+	background: 'linear-gradient(45deg, rgba(245,133,41,1) 0%, rgba(247,150,57,1) 25%, rgba(221,42,123,1) 50%, rgba(129,52,175,1) 85%, rgba(81,91,212,1) 100%)',
 	'&:hover': {
-		background: 'linear-gradient(130deg, rgba(251,140,0,1) 0%, rgba(251,140,0,1) 75%)',
+		background: 'linear-gradient(45deg, rgba(245,133,41,1) 0%, rgba(245,133,41,1) 100%)',
 	},
 	display: 'flex',
 }));

@@ -74,7 +74,7 @@ export default function PostCard({ postObj }) {
 	const {
 		id: postID,
 		metadata: { createdAt, edited, editedAt },
-		creator: { uid: creatorUID, photoURL: creatorPhotoURL, displayName: creatorName },
+		creator: { uid: creatorUID, photoURL: creatorPhotoURL, displayName: creatorName, id: creatorID },
 		body: { attachmentURL, text: bodyText, location },
 	} = postObj;
 	const { id: placeID, text: locationText } = location;
@@ -131,7 +131,7 @@ export default function PostCard({ postObj }) {
 						<MoreHorizIcon color="black" />
 					</IconButton>
 				}
-				title={<Typography>{creatorName}</Typography>}
+				title={<Typography>{creatorID}</Typography>}
 				subheader={
 					placeID ? (
 						<Link

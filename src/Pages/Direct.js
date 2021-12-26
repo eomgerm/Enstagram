@@ -2,15 +2,12 @@ import { useState, useContext } from 'react';
 import Dashboard from '../Components/Dashboard';
 import CreateNewPostModal from './CreateNewPostModal';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import { UserContext } from '../UserContext';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
-import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import Button from '@mui/material/Button';
 
 export default function Direct() {
@@ -28,17 +25,15 @@ export default function Direct() {
 				<Paper
 					variant="outlined"
 					sx={{
-						height: 'calc(100vh - 200px)',
-						minHeight: '500px',
-						width: '40vw',
-						minWidth: '40em',
+						height: '100%',
+						width: '100%'
 					}}
 				>
 					<Box
 						sx={{
 							display: 'flex',
 							flex: 1,
-							height: '100%',
+							height: '78vh',
 						}}
 					>
 						<Box

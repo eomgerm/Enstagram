@@ -18,6 +18,8 @@ import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import Search from '../Components/Search';
 import CreateNewPostButton from '../Components/CreateNewPostButton';
 import { pink } from '@mui/material/colors';
+import { Link as RRLink } from 'react-router-dom';
+import Header from './Header';
 
 const drawerWidth = 300;
 
@@ -25,36 +27,8 @@ export default function Dashboard({ openModal, currentPage, children }) {
 	const [userObj] = useContext(UserContext);
 
 	return (
-		<Box sx={{ display: 'flex' }}>
-			<AppBar
-				elevation={0}
-				position="fixed"
-				variant="outlined"
-				sx={{
-					width: 'calc(100% - 500px)',
-					ml: '300px',
-					mr: '200px',
-					backgroundColor: 'white',
-					borderTop: 0,
-					borderRight: 0,
-					borderLeft: 0,
-				}}
-			>
-				<Toolbar>
-					<Box
-						sx={{
-							display: 'flex',
-							justifyContent: 'space-between',
-							flexGrow: 1,
-							px: '10vw',
-							height: '100%',
-						}}
-					>
-						<Search />
-						<CreateNewPostButton openModal={openModal} />
-					</Box>
-				</Toolbar>
-			</AppBar>
+		<Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
+			<Header openModal={openModal} />
 			<Drawer
 				sx={{
 					width: drawerWidth,
@@ -85,8 +59,10 @@ export default function Dashboard({ openModal, currentPage, children }) {
 						}}
 					>
 						<Avatar
+							component={RRLink}
 							src={userObj.photoURL}
 							sx={{ width: 85, height: 85, bgcolor: pink[400], fontSize: 40 }}
+							to={`/${userObj.id}`}
 						>
 							{userObj.displayName[0]}
 						</Avatar>
@@ -112,7 +88,7 @@ export default function Dashboard({ openModal, currentPage, children }) {
 				</Box>
 				<MenuButtonList currentPage={currentPage} />
 			</Drawer>
-			<Box sx={{ pt: 4, px: '15vw' }}>
+			<Box sx={{ pt: 4, px: '10vw', width: '100%', height: '100%' }}>
 				<Toolbar />
 				{children}
 			</Box>

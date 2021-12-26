@@ -9,6 +9,7 @@ import Direct from './Pages/Direct';
 import Settings from './Pages/Settings';
 import GoogleSignUp from './Pages/GoogleSignUp';
 import { UserContext } from './UserContext';
+import Profile from './Pages/Profile';
 
 export default function AppRouter({ isLoggedIn }) {
 	const [userObj] = useContext(UserContext);
@@ -17,12 +18,16 @@ export default function AppRouter({ isLoggedIn }) {
 		<BrowserRouter>
 			<Routes>
 				{isLoggedIn ? (
-					<>
-						<Route exact path="/google-login" element={userObj ? <GoogleSignUp /> : <Loading />} />
-						<Route exact path="/home" element={userObj ? <Home /> : <Loading />} />
-						<Route exact path="/direct" element={userObj ? <Direct /> : <Loading />} />
-						<Route exact path="/settings" element={userObj ? <Settings /> : <Loading />} />
-					</>
+					userObj ? (
+						<>
+							<Route exact path="/google-login" element={<GoogleSignUp />} />
+							<Route exact path="/home" element={<Home />} />
+							<Route exact path="/direct" element={<Direct />} />
+							<Route exact path="/settings" element={<Settings />} />
+						</>
+					) : (
+						<Route path="/" element={<Loading />} />
+					)
 				) : (
 					<>
 						<Route exact path="/" element={<Auth />} />
@@ -30,6 +35,7 @@ export default function AppRouter({ isLoggedIn }) {
 						<Route exact path="/signup" element={<SignUp />} />
 					</>
 				)}
+				<Route exact path="/:id" element={<Profile />} />
 			</Routes>
 		</BrowserRouter>
 	);

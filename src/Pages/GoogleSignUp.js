@@ -10,8 +10,10 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../UserContext';
-import { fsService } from '../FirebaseConfig';
-import { setDoc, collection, doc } from 'firebase/firestore';
+import { fsService, authService } from '../FirebaseConfig';
+import { setDoc, collection, doc, deleteDoc } from 'firebase/firestore';
+import { deleteUser, reauthenticateWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import * as Hangul from 'hangul-js';
 
 const textInputTheme = createTheme({
 	palette: {
@@ -41,7 +43,6 @@ export default function GoogleSignUp() {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		console.log(userObj.isNewAccount);
 		if (!userObj.isNewAccount) {
 			navigate('/home');
 		}
@@ -60,15 +61,36 @@ export default function GoogleSignUp() {
 
 	const handleClickSignUp = async (data) => {
 		const { id } = data;
+		let searchKeys = [];
+		for (let i = 0; i < id.length; i++) {
+			searchKeys = [...searchKeys, id.substring(0, i + 1)];
+		}
+		const displayName = authService.currentUser.displayName;
+		const disassembled = Hangul.d(displayName);
+		let assembled = [];
+		for (let i = 0; i < disassembled.length; i++) {
+			assembled = [...assembled, Hangul.a(disassembled.slice(0, i + 1))];
+		}
+		searchKeys = [...searchKeys, ...assembled];
 		const userInfoRef = collection(fsService, 'userInfo');
 		const newUserInfo = {
 			...userObj,
 			isNewAccount: false,
-			id
+			id,
+			searchKeys,
 		};
 		await setDoc(doc(userInfoRef, userObj.uid), newUserInfo);
 		setUserObj(newUserInfo);
 		navigate('/home');
+	};
+
+	const handleClickCancel = async () => {
+		const provider = new GoogleAuthProvider();
+		await reauthenticateWithPopup(authService.currentUser, provider);
+		await deleteUser(authService.currentUser);
+		const userInfoRef = collection(fsService, 'userInfo');
+		await deleteDoc(doc(userInfoRef, userObj.uid));
+		navigate('/');
 	};
 
 	return (
@@ -126,7 +148,7 @@ export default function GoogleSignUp() {
 					<Button onClick={handleSubmit(handleClickSignUp)} variant="contained" sx={{ mt: '10px' }}>
 						가입하기
 					</Button>
-					<Button variant="contained" color="error" sx={{ mt: '10px' }}>
+					<Button onClick={handleClickCancel} variant="contained" color="error" sx={{ mt: '10px' }}>
 						취소하기
 					</Button>
 				</ThemeProvider>
