@@ -93,6 +93,7 @@ export default function Profile() {
 											fontSize: 40,
 											border: 1,
 											borderColor: 'grey.300',
+											mr: 2
 										}}
 									>
 										{queryUser?.displayName[0]}

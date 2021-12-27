@@ -17,10 +17,10 @@ export default function AppRouter({ isLoggedIn }) {
 	return (
 		<BrowserRouter>
 			<Routes>
+				{isLoggedIn && <Route exact path="/google-login" element={<GoogleSignUp />} />}
 				{isLoggedIn ? (
 					userObj ? (
 						<>
-							<Route exact path="/google-login" element={<GoogleSignUp />} />
 							<Route exact path="/home" element={<Home />} />
 							<Route exact path="/direct" element={<Direct />} />
 							<Route exact path="/settings" element={<Settings />} />

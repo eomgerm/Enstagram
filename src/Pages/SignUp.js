@@ -18,6 +18,7 @@ import { authService, fsService } from '../FirebaseConfig';
 import { Link as RRLink, useNavigate } from 'react-router-dom';
 import { setDoc, collection, doc } from 'firebase/firestore';
 import { UserContext } from '../UserContext';
+import * as Hangul from 'hangul-js';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const PASSWORD_REGEXT = /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+])(?!.*[^a-zA-z0-9$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
@@ -90,13 +91,27 @@ export default function SignUp() {
 		const { email, password, id, displayName } = data;
 		await createUserWithEmailAndPassword(authService, email, password);
 		const user = authService.currentUser;
+		let searchKeys = [];
+		for (let i = 0; i < id.length; i++) {
+			searchKeys = [...searchKeys, id.substring(0, i + 1)];
+		}
+		const disassembled = Hangul.d(displayName);
+		let assembled = [];
+		for (let i = 0; i < disassembled.length; i++) {
+			assembled = [...assembled, Hangul.a(disassembled.slice(0, i + 1))];
+		}
+		searchKeys = [...searchKeys, ...assembled];
 		const userInfo = {
-			displayName,
 			email,
+			displayName,
 			id,
-			isNewAccount: false,
-			photoURL: '',
 			uid: user.uid,
+			photoURL: user.photoURL,
+			posts: 0,
+			followers: [],
+			followings: [],
+			searchKeys,
+			description: [],
 		};
 		const userInfoRef = collection(fsService, 'userInfo');
 		await setDoc(doc(userInfoRef, user.uid), userInfo);

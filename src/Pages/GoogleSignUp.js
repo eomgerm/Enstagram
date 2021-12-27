@@ -43,7 +43,13 @@ export default function GoogleSignUp() {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (!userObj.isNewAccount) {
+		const {
+			currentUser: {
+				metadata: { creationTime, lastSignInTime },
+			},
+		} = authService;
+		const isNewAccount = creationTime === lastSignInTime;
+		if (!isNewAccount) {
 			navigate('/home');
 		}
 	});
@@ -61,6 +67,7 @@ export default function GoogleSignUp() {
 
 	const handleClickSignUp = async (data) => {
 		const { id } = data;
+		const user = authService.currentUser;
 		let searchKeys = [];
 		for (let i = 0; i < id.length; i++) {
 			searchKeys = [...searchKeys, id.substring(0, i + 1)];
@@ -73,14 +80,21 @@ export default function GoogleSignUp() {
 		}
 		searchKeys = [...searchKeys, ...assembled];
 		const userInfoRef = collection(fsService, 'userInfo');
-		const newUserInfo = {
-			...userObj,
-			isNewAccount: false,
+		const userInfo = {
+			email: user.email,
+			displayName: user.displayName,
+			isNewAccount: true,
 			id,
+			uid: user.uid,
+			photoURL: user.photoURL,
+			posts: 0,
+			followers: 0,
+			followings: 0,
 			searchKeys,
+			description: [],
 		};
-		await setDoc(doc(userInfoRef, userObj.uid), newUserInfo);
-		setUserObj(newUserInfo);
+		await setDoc(doc(userInfoRef, user.uid), userInfo);
+		setUserObj(userInfo);
 		navigate('/home');
 	};
 

@@ -162,10 +162,10 @@ export default function Auth() {
 					</Divider>
 				</div>
 				<Stack sx={{ display: 'flex', mt: '20px', alignItems: 'center' }} spacing={2.5}>
-					<Link underline="none" component="button" onClick={handleClickGoogleLogin}>
+					<Link underline="hover" component="button" onClick={handleClickGoogleLogin}>
 						<Typography sx={{ color: grey[700], fontSize: 14 }}>Google로 로그인</Typography>
 					</Link>
-					<Link underline="none">
+					<Link underline="hover">
 						<Typography sx={{ fontSize: 12 }}>비밀번호를 잊으셨나요?</Typography>
 					</Link>
 				</Stack>

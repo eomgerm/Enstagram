@@ -57,25 +57,10 @@ export default function App() {
 			if (user) {
 				setIsLoggedIn(true);
 				const userInfoSnap = await getDoc(doc(fsService, 'userInfo', user.uid));
-				let userInfo = userInfoSnap.data();
-				if (!userInfo) {
-					const userInfoRef = collection(fsService, 'userInfo');
-					const newUserInfo = {
-						email: user.email,
-						displayName: user.displayName,
-						isNewAccount: true,
-						id: '',
-						uid: user.uid,
-						photoURL: user.photoURL,
-						posts: 0,
-						followers: 0,
-						followings: 0,
-						searchKeys: [],
-					};
-					await setDoc(doc(userInfoRef, user.uid), newUserInfo);
-					userInfo = newUserInfo;
+				const userInfo = userInfoSnap.data();
+				if (userInfo) {
+					setUserObj(userInfo);
 				}
-				setUserObj(userInfo);
 			} else {
 				setUserObj(null);
 				setIsLoggedIn(false);

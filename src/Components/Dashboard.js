@@ -17,6 +17,7 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import Search from '../Components/Search';
 import CreateNewPostButton from '../Components/CreateNewPostButton';
+import Link from '@mui/material/Link';
 import { pink } from '@mui/material/colors';
 import { Link as RRLink } from 'react-router-dom';
 import Header from './Header';
@@ -25,7 +26,7 @@ const drawerWidth = 300;
 
 export default function Dashboard({ openModal, currentPage, children }) {
 	const [userObj] = useContext(UserContext);
-
+	
 	return (
 		<Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
 			<Header openModal={openModal} />
@@ -58,14 +59,14 @@ export default function Dashboard({ openModal, currentPage, children }) {
 							flexDirection: 'column',
 						}}
 					>
-						<Avatar
-							component={RRLink}
-							src={userObj.photoURL}
-							sx={{ width: 85, height: 85, bgcolor: pink[400], fontSize: 40 }}
-							to={`/${userObj.id}`}
-						>
-							{userObj.displayName[0]}
-						</Avatar>
+						<Link component={RRLink} to={`/${userObj.id}`} underline="none">
+							<Avatar
+								src={userObj.photoURL}
+								sx={{ width: 85, height: 85, bgcolor: pink[400], fontSize: 40 }}
+							>
+								{userObj.displayName[0]}
+							</Avatar>
+						</Link>
 						<Typography sx={{ fontWeight: 600, mt: 1 }}>{userObj.displayName}</Typography>
 						<Typography sx={{ fontSize: 11, color: 'grey.500', fontWeight: 400 }}>
 							@{userObj.id}
