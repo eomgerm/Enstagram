@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Drawer from '@mui/material/Drawer';
-import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
@@ -15,8 +14,6 @@ import { UserContext } from '../UserContext';
 import IconButton from '@mui/material/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
-import Search from '../Components/Search';
-import CreateNewPostButton from '../Components/CreateNewPostButton';
 import Link from '@mui/material/Link';
 import { pink } from '@mui/material/colors';
 import { Link as RRLink } from 'react-router-dom';

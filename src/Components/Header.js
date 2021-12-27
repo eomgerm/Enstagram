@@ -19,13 +19,12 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
 import { pink } from '@mui/material/colors';
 import { useNavigate } from 'react-router-dom';
 //end
 import { Link as RRLink } from 'react-router-dom';
 import { fsService } from '../FirebaseConfig';
-import { getDocs, collection, query, where, orderBy } from 'firebase/firestore';
+import { getDocs, collection, query, where } from 'firebase/firestore';
 
 const fullWidthStyle = {
 	backgroundColor: 'white',

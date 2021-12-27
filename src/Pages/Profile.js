@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
-import { UserContext } from '../UserContext';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fsService, authService } from '../FirebaseConfig';
 import { getDocs, collection, query, where, orderBy } from 'firebase/firestore';

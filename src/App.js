@@ -6,7 +6,7 @@ import { authService, fsService } from './FirebaseConfig';
 import { useState, useEffect } from 'react';
 import Loading from './Pages/Loading';
 import { UserContext } from './UserContext';
-import { setDoc, collection, getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc } from 'firebase/firestore';
 import { blue } from '@mui/material/colors';
 
 const theme = createTheme({
