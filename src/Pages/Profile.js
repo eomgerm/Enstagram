@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { UserContext } from '../UserContext';
 import { useParams } from 'react-router-dom';
-import { fsService, authService } from '../FirebaseConfig';
-import { getDocs, collection, query, where, orderBy } from 'firebase/firestore';
+import { fsService } from '../FirebaseConfig';
+import { getDocs, collection, query, where, orderBy, setDoc, doc } from 'firebase/firestore';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import { pink } from '@mui/material/colors';
@@ -14,14 +15,17 @@ import Divider from '@mui/material/Divider';
 import Loading from './Loading';
 import ProfilePostCard from '../Components/ProfilePostCard';
 import Masonry from '@mui/lab/Masonry';
+import PersonIcon from '@mui/icons-material/Person';
+import CheckIcon from '@mui/icons-material/Check';
 
 export default function Profile() {
+	const [userObj, setUserObj] = useContext(UserContext);
 	const [queryUser, setQueryUser] = useState();
 	const [posts, setPosts] = useState();
-	const { id } = useParams();
+	const { queryID } = useParams();
 
 	const getUserInfo = async () => {
-		const q = query(collection(fsService, 'userInfo'), where('id', '==', id));
+		const q = query(collection(fsService, 'userInfo'), where('id', '==', queryID));
 		const snapshot = await getDocs(q);
 		let users = [];
 		snapshot.forEach((doc) => {
@@ -48,10 +52,34 @@ export default function Profile() {
 		setPosts(postArr);
 	};
 
+	const handleClickFollow = async () => {
+		const { followings: currentUserFollowings, uid: currentUserUID } = userObj;
+		const { followers: queryUserFollowers, uid: queryUserUID } = queryUser;
+		let update = { followings: [...currentUserFollowings, queryUserUID] };
+		const userInfoRef = collection(fsService, 'userInfo');
+		await setDoc(doc(userInfoRef, currentUserUID), update, { merge: true });
+		setUserObj({ ...userObj, ...update });
+		update = { followers: [...queryUserFollowers, currentUserUID] };
+		await setDoc(doc(userInfoRef, queryUserUID), update, { merge: true });
+		setQueryUser({...queryUser, ...update});
+	};
+	
+	const handleClickUnfollow = async () => {
+		const {followings: currentUserFollowings, uid: currentUserUID} = userObj;
+		const {followers: queryUserFollowers, uid: queryUserUID} = queryUser;
+		let update = {followings: currentUserFollowings.filter((uid) => uid !== queryUserUID)};
+		const userInfoRef = collection(fsService, 'userInfo');
+		await setDoc(doc(userInfoRef, currentUserUID), update, { merge: true });
+		setUserObj({ ...userObj, ...update });
+		update = { followers: queryUserFollowers.filter((uid) => uid !== currentUserUID) };
+		await setDoc(doc(userInfoRef, queryUserUID), update, { merge: true });
+		setQueryUser({...queryUser, ...update});
+	}
+
 	useEffect(() => {
 		getUserInfo();
 		//eslint-disable-next-line
-	}, []);
+	}, [queryID]);
 
 	useEffect(() => {
 		if (queryUser) {
@@ -60,7 +88,8 @@ export default function Profile() {
 		//eslint-disable-next-line
 	}, [queryUser]);
 
-	const isOwner = authService.currentUser?.uid === queryUser?.uid;
+	const isOwner = userObj?.uid === queryUser?.uid;
+	const isFollowing = userObj?.followings.includes(queryUser?.uid);
 
 	return (
 		<>
@@ -89,10 +118,10 @@ export default function Profile() {
 											width: 150,
 											height: 150,
 											bgcolor: pink[400],
-											fontSize: 40,
+											fontSize: 60,
 											border: 1,
 											borderColor: 'grey.300',
-											mr: 2
+											mr: 2,
 										}}
 									>
 										{queryUser?.displayName[0]}
@@ -100,13 +129,30 @@ export default function Profile() {
 								</Box>
 								<Box sx={{ display: 'flex', flex: 4, flexDirection: 'column' }}>
 									<Box sx={{ display: 'flex', alignItems: 'center' }}>
-										<Typography sx={{ fontSize: 28, fontWeight: 300, mr: 2 }}>
+										<Typography
+											sx={{ fontSize: 28, fontWeight: 300, mr: 1.5, textAlign: 'center', mb: 0.5 }}
+										>
 											{queryUser.id}
 										</Typography>
-										<Box sx={{ py: 2, display: 'flex' }}>
+										<Box sx={{ display: 'flex' }}>
 											{isOwner && (
-												<Button disableElevation variant="contained">
+												<Button disableElevation variant="outlined" size='small' >
 													프로필 편집
+												</Button>
+											)}
+											{isOwner ? null : isFollowing ? (
+												<Button variant="outlined" size="small" onClick={handleClickUnfollow} >
+													<PersonIcon sx={{fontSize: 22, mr: -0.5}} />
+													<CheckIcon sx={{fontSize: 16}} />
+												</Button>
+											) : (
+												<Button
+													onClick={handleClickFollow}
+													disableElevation
+													variant="outlined"
+													size="small"
+												>
+													팔로우
 												</Button>
 											)}
 										</Box>
@@ -118,11 +164,13 @@ export default function Profile() {
 										</Box>
 										<Box sx={{ display: 'flex' }}>
 											<Typography sx={{ mr: 1 }}>팔로워</Typography>
-											<Typography sx={{ fontWeight: 700 }}>{queryUser.followers}</Typography>
+											<Typography sx={{ fontWeight: 700 }}>{queryUser.followers.length}</Typography>
 										</Box>
 										<Box sx={{ display: 'flex' }}>
 											<Typography sx={{ mr: 1 }}>팔로잉</Typography>
-											<Typography sx={{ fontWeight: 700 }}>{queryUser.followings}</Typography>
+											<Typography sx={{ fontWeight: 700 }}>
+												{queryUser.followings.length}
+											</Typography>
 										</Box>
 									</Stack>
 									<Box>

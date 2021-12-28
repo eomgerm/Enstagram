@@ -35,7 +35,7 @@ export default function AppRouter({ isLoggedIn }) {
 						<Route exact path="/signup" element={<SignUp />} />
 					</>
 				)}
-				<Route exact path="/:id" element={<Profile />} />
+				<Route exact path="/:queryID" element={<Profile />} />
 			</Routes>
 		</BrowserRouter>
 	);

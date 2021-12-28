@@ -112,6 +112,7 @@ export default function SignUp() {
 			followings: [],
 			searchKeys,
 			description: [],
+			recentSearch: [],
 		};
 		const userInfoRef = collection(fsService, 'userInfo');
 		await setDoc(doc(userInfoRef, user.uid), userInfo);

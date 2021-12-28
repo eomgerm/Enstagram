@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
@@ -11,6 +11,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 import InstagramIcon from '@mui/icons-material/Instagram';
 //for Autocomplete
+import { useContext } from 'react';
+import { UserContext } from '../UserContext';
 import Popper from '@mui/material/Popper';
 import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
@@ -19,12 +21,14 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { pink } from '@mui/material/colors';
 import { useNavigate } from 'react-router-dom';
 //end
 import { Link as RRLink } from 'react-router-dom';
-import { fsService } from '../FirebaseConfig';
-import { getDocs, collection, query, where } from 'firebase/firestore';
+import { fsService, authService } from '../FirebaseConfig';
+import { getDocs, collection, query, where, getDoc, doc } from 'firebase/firestore';
+import Button from '@mui/material/Button';
 
 const fullWidthStyle = {
 	backgroundColor: 'white',
@@ -33,11 +37,25 @@ const fullWidthStyle = {
 	borderLeft: 0,
 };
 
-const SearchAutoComplete = ({ open, anchorEl, searchText }) => {
-	const [results, setResults] = useState();
+const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInput }) => {
+	const [userObj, setUserObj] = useContext(UserContext);
+	const [results, setResults] = useState([]);
+	// const [recentResults, setRecentResults] = useState([]);
+
+	// const getRecentResults = async () => {
+	// 	const { recentSearch } = userObj;
+	// 	for (const uid of recentSearch) {
+	// 		const docRef = doc(collection(fsService, 'userInfo'), uid);
+	// 		const snapshot = await getDoc(docRef);
+	// 		setRecentResults((prev) => [...prev, snapshot.data()]);
+	// 	}
+	// };
 
 	const getResults = async () => {
-		const q = query(collection(fsService, 'userInfo'), where('searchKeys', 'array-contains', searchText));
+		const q = query(
+			collection(fsService, 'userInfo'),
+			where('searchKeys', 'array-contains', searchText)
+		);
 		const snapshot = await getDocs(q);
 		let newResults = [];
 		snapshot.forEach((doc) => {
@@ -51,12 +69,21 @@ const SearchAutoComplete = ({ open, anchorEl, searchText }) => {
 		//eslint-disable-next-line
 	}, [searchText]);
 
+	// useEffect(() => {
+	// 	getRecentResults();
+	// }, []);
+
 	const UserItem = ({ user }) => {
 		const navigate = useNavigate();
 
+		const handleClickItem = () => {
+			navigate(`/${user.id}`);
+			closePopper();
+			clearInput();
+		};
 		return (
 			<>
-				<ListItemButton onClick={() => navigate(`/${user.id}`)}>
+				<ListItemButton onClick={handleClickItem}>
 					<ListItemAvatar>
 						<Avatar src={user.photoURL} sx={{ bgcolor: pink[500] }}>
 							{user.displayName[0]}
@@ -81,10 +108,18 @@ const SearchAutoComplete = ({ open, anchorEl, searchText }) => {
 				}}
 			>
 				<List dense>
-					<ListSubheader sx={{ lineHeight: '36px' }}>계정</ListSubheader>
-					{results?.map((user) => (
-						<UserItem key={user.uid} user={user} />
-					))}
+					{searchText ? (
+						<>
+							{Boolean(results?.length) && (
+								<ListSubheader sx={{ lineHeight: 2 }}>계정</ListSubheader>
+							)}
+							{results?.map((user) => (
+								<UserItem key={user.uid} user={user} />
+							))}
+						</>
+					) : (
+						<ListSubheader sx={{ lineHeight: 2 }}>최근 검색 항목</ListSubheader>
+					)}
 				</List>
 			</Paper>
 		</Popper>
@@ -94,16 +129,30 @@ const SearchAutoComplete = ({ open, anchorEl, searchText }) => {
 export default function Header({ openModal, fullWidth }) {
 	const [searchText, setSearchText] = useState('');
 	const [anchorEl, setAnchorEl] = useState(null);
+	const navigate = useNavigate();
 
 	const onChange = (event) => {
 		const {
 			target: { value },
 		} = event;
 		setSearchText(value);
-		setAnchorEl(value ? event.currentTarget : null);
+	};
+
+	const closePopper = () => setAnchorEl(null);
+	const openPopper = (value) => setAnchorEl(value);
+	const clearInput = () => setSearchText('');
+
+	const handleClickAway = () => {
+		closePopper();
+	};
+
+	const handleClickSearch = (event) => {
+		openPopper(event.currentTarget);
+		event.target.select();
 	};
 
 	const open = Boolean(anchorEl);
+	const isLoggedIn = Boolean(authService.currentUser);
 
 	return (
 		<AppBar
@@ -141,9 +190,29 @@ export default function Header({ openModal, fullWidth }) {
 						height: '100%',
 					}}
 				>
-					<Search value={searchText} onChange={onChange} />
-					<SearchAutoComplete open={open} anchorEl={anchorEl} searchText={searchText} />
-					<CreateNewPostButton openModal={openModal} />
+					<ClickAwayListener onClickAway={handleClickAway}>
+						<Box>
+							<Search
+								value={searchText}
+								onChange={onChange}
+								inputProps={{ onClick: handleClickSearch }}
+							/>
+							<SearchAutoComplete
+								open={open}
+								anchorEl={anchorEl}
+								searchText={searchText}
+								closePopper={closePopper}
+								clearInput={clearInput}
+							/>
+						</Box>
+					</ClickAwayListener>
+					{isLoggedIn ? (
+						<CreateNewPostButton openModal={openModal} />
+					) : (
+						<Button variant="contained" onClick={() => navigate('/')}>
+							로그인
+						</Button>
+					)}
 				</Box>
 				{fullWidth && (
 					<>

@@ -92,6 +92,7 @@ export default function GoogleSignUp() {
 			followings: 0,
 			searchKeys,
 			description: [],
+			recentSearch: [],
 		};
 		await setDoc(doc(userInfoRef, user.uid), userInfo);
 		setUserObj(userInfo);

@@ -38,13 +38,20 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 	},
 }));
 
-export default function Search({value,onChange}) {
+export default function Search({ value, onChange, inputProps, inputRef }) {
 	return (
 		<SearchContainer>
 			<SearchIconWrapper>
 				<SearchIcon />
 			</SearchIconWrapper>
-			<StyledInputBase fullWidth placeholder="검색" value={value} onChange={onChange} />
+			<StyledInputBase
+				fullWidth
+				placeholder="검색"
+				value={value}
+				onChange={onChange}
+				inputProps={inputProps}
+				inputRef={inputRef}
+			/>
 		</SearchContainer>
 	);
 }
