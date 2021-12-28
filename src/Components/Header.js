@@ -16,6 +16,7 @@ import { UserContext } from '../UserContext';
 import Popper from '@mui/material/Popper';
 import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -24,10 +25,22 @@ import Avatar from '@mui/material/Avatar';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { pink } from '@mui/material/colors';
 import { useNavigate } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
+//import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
 //end
 import { Link as RRLink } from 'react-router-dom';
 import { fsService, authService } from '../FirebaseConfig';
-import { getDocs, collection, query, where, getDoc, doc } from 'firebase/firestore';
+import {
+	getDocs,
+	collection,
+	query,
+	where,
+	getDoc,
+	doc,
+	setDoc,
+	serverTimestamp,
+} from 'firebase/firestore';
 import Button from '@mui/material/Button';
 
 const fullWidthStyle = {
@@ -40,16 +53,21 @@ const fullWidthStyle = {
 const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInput }) => {
 	const [userObj, setUserObj] = useContext(UserContext);
 	const [results, setResults] = useState([]);
-	// const [recentResults, setRecentResults] = useState([]);
+	const [recentResults, setRecentResults] = useState([]);
 
-	// const getRecentResults = async () => {
-	// 	const { recentSearch } = userObj;
-	// 	for (const uid of recentSearch) {
-	// 		const docRef = doc(collection(fsService, 'userInfo'), uid);
-	// 		const snapshot = await getDoc(docRef);
-	// 		setRecentResults((prev) => [...prev, snapshot.data()]);
-	// 	}
-	// };
+	const getRecentResults = async () => {
+		if (userObj) {
+			console.log('getting');
+			setTimeout(() => {}, 1000);
+			const { recentSearch } = userObj;
+			for (const uid of recentSearch) {
+				const docRef = doc(collection(fsService, 'userInfo'), uid);
+				const snapshot = await getDoc(docRef);
+				setRecentResults((prev) => [...prev, snapshot.data()].reverse());
+			}
+			console.log('got!')
+		}
+	};
 
 	const getResults = async () => {
 		const q = query(
@@ -69,20 +87,42 @@ const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInpu
 		//eslint-disable-next-line
 	}, [searchText]);
 
-	// useEffect(() => {
-	// 	getRecentResults();
-	// }, []);
+	useEffect(() => {
+		getRecentResults();
 
-	const UserItem = ({ user }) => {
+		return () => setRecentResults([]);
+	}, []);
+
+	const UserItem = ({ user, recentSearchItem }) => {
 		const navigate = useNavigate();
 
-		const handleClickItem = () => {
+		const handleClickItem = async () => {
 			navigate(`/${user.id}`);
 			closePopper();
 			clearInput();
+			if (userObj) {
+				console.log('updating...');
+				const { recentSearch } = userObj;
+				const userInfoRef = collection(fsService, 'userInfo');
+				const update = {
+					recentSearch: [...recentSearch.filter((uid) => uid !== user.uid), user.uid],
+				};
+				await setDoc(doc(userInfoRef, userObj.uid), update, { merge: true });
+				setUserObj({ ...userObj, ...update });
+				console.log('updated!');
+			}
 		};
 		return (
-			<>
+			<ListItem
+				disablePadding
+				secondaryAction={
+					recentSearchItem && (
+						<IconButton edge="end">
+							<ClearIcon />
+						</IconButton>
+					)
+				}
+			>
 				<ListItemButton onClick={handleClickItem}>
 					<ListItemAvatar>
 						<Avatar src={user.photoURL} sx={{ bgcolor: pink[500] }}>
@@ -91,7 +131,7 @@ const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInpu
 					</ListItemAvatar>
 					<ListItemText primary={user.id} secondary={user.displayName} />
 				</ListItemButton>
-			</>
+			</ListItem>
 		);
 	};
 
@@ -107,20 +147,39 @@ const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInpu
 					borderBottomRightRadius: 4,
 				}}
 			>
-				<List dense>
+				<Box sx={{ height: 1, display: 'flex', flex: 1, flexDirection: 'column' }}>
 					{searchText ? (
-						<>
+						<List dense>
 							{Boolean(results?.length) && (
 								<ListSubheader sx={{ lineHeight: 2 }}>계정</ListSubheader>
 							)}
 							{results?.map((user) => (
 								<UserItem key={user.uid} user={user} />
 							))}
-						</>
+						</List>
 					) : (
-						<ListSubheader sx={{ lineHeight: 2 }}>최근 검색 항목</ListSubheader>
+						<>
+							<List dense>
+								<ListSubheader sx={{ lineHeight: 2 }}>최근 검색 항목</ListSubheader>
+								{recentResults?.map((user) => (
+									<UserItem recentSearchItem key={user.uid} user={user} />
+								))}
+							</List>
+							{!Boolean(recentResults?.length) && (
+								<Box
+									sx={{
+										justifyContent: 'center',
+										alignItems: 'center',
+										display: 'flex',
+										flexGrow: 1,
+									}}
+								>
+									<Typography sx={{ color: 'grey.500' }}>최근 검색 내역 없음</Typography>
+								</Box>
+							)}
+						</>
 					)}
-				</List>
+				</Box>
 			</Paper>
 		</Popper>
 	);
@@ -131,28 +190,34 @@ export default function Header({ openModal, fullWidth }) {
 	const [anchorEl, setAnchorEl] = useState(null);
 	const navigate = useNavigate();
 
+	const closePopper = () => setAnchorEl(null);
+	const openPopper = (value) => setAnchorEl(value);
+	const clearInput = () => setSearchText('');
+
+	const isLoggedIn = Boolean(authService.currentUser);
+
 	const onChange = (event) => {
 		const {
 			target: { value },
 		} = event;
 		setSearchText(value);
+		isLoggedIn
+			? setAnchorEl(anchorEl || event.currentTarget)
+			: setAnchorEl(value ? event.currentTarget : null);
 	};
-
-	const closePopper = () => setAnchorEl(null);
-	const openPopper = (value) => setAnchorEl(value);
-	const clearInput = () => setSearchText('');
 
 	const handleClickAway = () => {
 		closePopper();
 	};
 
 	const handleClickSearch = (event) => {
-		openPopper(event.currentTarget);
+		if (authService.currentUser || searchText) {
+			openPopper(event.currentTarget);
+		}
 		event.target.select();
 	};
 
 	const open = Boolean(anchorEl);
-	const isLoggedIn = Boolean(authService.currentUser);
 
 	return (
 		<AppBar

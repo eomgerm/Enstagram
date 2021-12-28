@@ -25,7 +25,6 @@ export default function Direct() {
 				<Paper
 					variant="outlined"
 					sx={{
-						height: '100%',
 						width: '100%'
 					}}
 				>
