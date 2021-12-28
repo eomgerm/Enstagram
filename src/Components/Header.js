@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';

@@ -1,30 +1,20 @@
-import { useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import { pink } from '@mui/material/colors';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 
 export default function ProfilePostCard({ postObj }) {
-	useEffect(() => {});
-
 	const {
-		id: postID,
-		metadata: { createdAt, edited, editedAt },
 		creator: {
-			uid: creatorUID,
 			photoURL: creatorPhotoURL,
 			displayName: creatorName,
-			id: creatorID,
 		},
-		body: { attachmentURL, text: bodyText, location },
+		body: { attachmentURL },
 	} = postObj;
-	const { id: placeID, text: locationText } = location;
 
 	return (
 		<Card sx={{ backgroundColor: 'transparent' }} elevation={0}>

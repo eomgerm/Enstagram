@@ -74,7 +74,7 @@ export default function PostCard({ postObj }) {
 	const {
 		id: postID,
 		metadata: { createdAt, edited, editedAt },
-		creator: { uid: creatorUID, photoURL: creatorPhotoURL, displayName: creatorName, id: creatorID },
+		creator: { uid: creatorUID, photoURL: creatorPhotoURL, id: creatorID },
 		body: { attachmentURL, text: bodyText, location },
 	} = postObj;
 	const { id: placeID, text: locationText } = location;
