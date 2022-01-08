@@ -6,21 +6,18 @@ import Button from '@mui/material/Button';
 import { fsService, storageService } from '../FirebaseConfig';
 import { doc, deleteDoc, setDoc, collection, getDoc } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { UserContext } from '../UserContext';
-import Snackbar from './Snackbar';
 import Backdrop from '@mui/material/Backdrop';
 import Fade from '@mui/material/Fade';
 
-export default function ConfirmDeleteModal({ open, closeModal, postID, attachmentURL }) {
+export default function ConfirmDeleteModal({ open, closeModal, closeMenu, postID, attachmentURL }) {
 	const [userObj, setUserObj] = useContext(UserContext);
-	const [successSnackBarOpen, setSuccessSnackbarOpen] = useState(false);
-
-	const openSuccessSnackbar = () => setSuccessSnackbarOpen(true);
-	const closeSuccessSnackbar = () => setSuccessSnackbarOpen(false);
 
 	const handleClickOK = async () => {
 		try {
+			closeModal();
+			closeMenu();
 			await deleteDoc(doc(fsService, 'posts', postID));
 			await deleteObject(ref(storageService, attachmentURL));
 			const userInfoRef = collection(fsService, 'userInfo');
@@ -28,7 +25,6 @@ export default function ConfirmDeleteModal({ open, closeModal, postID, attachmen
 			const userInfoSnap = await getDoc(doc(fsService, 'userInfo', userObj.uid));
 			const newUserInfo = userInfoSnap.data();
 			setUserObj(newUserInfo);
-			closeModal();
 		} catch (e) {
 			console.log(e);
 		}
@@ -67,21 +63,15 @@ export default function ConfirmDeleteModal({ open, closeModal, postID, attachmen
 								이 게시물을 삭제하시겠어요?
 							</Typography>
 						</Box>
-						<Divider sx={{ borderBottomWidth: 2 }} />
+						<Divider />
 						<Button onClick={handleClickOK} color="error">
 							삭제
 						</Button>
-						<Divider sx={{ borderBottomWidth: 2 }} />
+						<Divider />
 						<Button onClick={closeModal}>취소</Button>
 					</Box>
 				</Fade>
 			</Modal>
-			<Snackbar
-				snackbarOpen={successSnackBarOpen}
-				closeSnackBar={closeSuccessSnackbar}
-				severity="success"
-				text="게시물이 삭제 되었습니다!"
-			/>
 		</>
 	);
 }

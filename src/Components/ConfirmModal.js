@@ -31,11 +31,11 @@ export default function ConfirmModal({ open, closeModal, closeParentModal }) {
 						지금 나가면 변경사항을 잃게됩니다.
 					</Typography>
 				</Box>
-				<Divider sx={{ borderBottomWidth: 2 }} />
+				<Divider />
 				<Button onClick={handleClickOK} color="error">
 					삭제
 				</Button>
-				<Divider sx={{ borderBottomWidth: 2 }} />
+				<Divider />
 				<Button onClick={closeModal}>취소</Button>
 			</Box>
 		</Modal>

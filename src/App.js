@@ -7,7 +7,8 @@ import { useState, useEffect } from 'react';
 import Loading from './Pages/Loading';
 import { UserContext } from './UserContext';
 import { getDoc, doc } from 'firebase/firestore';
-import { blue } from '@mui/material/colors';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 const theme = createTheme({
 	palette: {
@@ -22,21 +23,9 @@ const theme = createTheme({
 	components: {
 		MuiCssBaseline: {
 			styleOverrides: {
-				'html, body, #root, .App' : {
+				'html, body, #root, .App': {
 					width: '100%',
-					height: '100%'
-				}
-			},
-		},
-		MuiButton: {
-			styleOverrides: {
-				palette: {
-					primary: {
-						main: blue[500],
-					},
-				},
-				typography: {
-					fontFamily: '"Noto Sans KR", sans-serif',
+					height: '100%',
 				},
 			},
 		},
@@ -70,6 +59,22 @@ export default function App() {
 			<CssBaseline />
 			<UserContext.Provider value={[userObj, setUserObj]}>
 				{init ? <AppRouter isLoggedIn={isLoggedIn} /> : <Loading />}
+				<Box
+					sx={{
+						position: 'relative',
+						bottom: 0,
+						color: 'grey.400',
+						py: 1.5,
+						mt: 'auto',
+					}}
+				>
+					<Box sx={{ textAlign: 'center' }}>
+						<Typography sx={{ fontSize: 12, fontWeight: 300 }}>
+							Copyrightⓒ {new Date().getFullYear()} by Gihoon Eom
+						</Typography>
+						<Typography sx={{ fontSize: 12, fontWeight: 300 }}>Enstagram Project</Typography>
+					</Box>
+				</Box>
 			</UserContext.Provider>
 		</ThemeProvider>
 	);

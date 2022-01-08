@@ -39,7 +39,6 @@ import {
 	getDoc,
 	doc,
 	setDoc,
-	serverTimestamp,
 } from 'firebase/firestore';
 import Button from '@mui/material/Button';
 
@@ -57,7 +56,6 @@ const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInpu
 
 	const getRecentResults = async () => {
 		if (userObj) {
-			console.log('getting');
 			setTimeout(() => {}, 1000);
 			const { recentSearch } = userObj;
 			for (const uid of recentSearch) {
@@ -65,7 +63,6 @@ const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInpu
 				const snapshot = await getDoc(docRef);
 				setRecentResults((prev) => [...prev, snapshot.data()].reverse());
 			}
-			console.log('got!')
 		}
 	};
 
@@ -91,6 +88,7 @@ const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInpu
 		getRecentResults();
 
 		return () => setRecentResults([]);
+		// eslint-disable-next-line
 	}, []);
 
 	const UserItem = ({ user, recentSearchItem }) => {
@@ -101,7 +99,6 @@ const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInpu
 			closePopper();
 			clearInput();
 			if (userObj) {
-				console.log('updating...');
 				const { recentSearch } = userObj;
 				const userInfoRef = collection(fsService, 'userInfo');
 				const update = {
@@ -109,16 +106,27 @@ const SearchAutoComplete = ({ open, anchorEl, searchText, closePopper, clearInpu
 				};
 				await setDoc(doc(userInfoRef, userObj.uid), update, { merge: true });
 				setUserObj({ ...userObj, ...update });
-				console.log('updated!');
 			}
 		};
+		
+		const deleteRecentSearch = async () => {
+			const newRecentResults = recentResults.filter((value) => value.uid !== user.uid);
+			console.log(newRecentResults);
+			const newRecentSearch = newRecentResults.map(value => value.uid);
+			console.log(newRecentSearch);
+			const userInfoRef = collection(fsService, 'userInfo');
+			await setDoc(doc(userInfoRef, userObj.uid), {recentSearch: newRecentSearch}, {merge: true} );
+			setRecentResults(newRecentResults);
+			setUserObj({...userObj, recentSearch: newRecentSearch});
+		}
+		
 		return (
 			<ListItem
 				disablePadding
 				secondaryAction={
 					recentSearchItem && (
-						<IconButton edge="end">
-							<ClearIcon />
+						<IconButton edge="end" onClick={deleteRecentSearch} >
+							<ClearIcon/>
 						</IconButton>
 					)
 				}

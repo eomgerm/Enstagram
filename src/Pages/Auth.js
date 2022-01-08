@@ -152,7 +152,7 @@ export default function Auth() {
 				<Button
 					onClick={handleSubmit(handleClickLogin)}
 					sx={{ margin: '10px 0 20px' }}
-					variant="contained"
+					variant="outlined"
 				>
 					로그인
 				</Button>

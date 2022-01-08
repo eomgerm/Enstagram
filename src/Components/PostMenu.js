@@ -20,7 +20,6 @@ export default function PostMenu({ anchorEl, open, closeMenu, isOwner, postID, a
 
 	const handleClickDelete = () => {
 		showModal();
-		closeMenu();
 	};
 
 	return (
@@ -57,6 +56,7 @@ export default function PostMenu({ anchorEl, open, closeMenu, isOwner, postID, a
 			<ConfirmDeleteModal
 				open={modalOpen}
 				closeModal={closeModal}
+				closeMenu={closeMenu}
 				postID={postID}
 				attachmentURL={attachmentURL}
 			/>

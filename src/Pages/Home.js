@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { fsService } from '../FirebaseConfig';
 import PostCard from '../Components/PostCard';
+import Box from '@mui/material/Box';
 
 export default function Home() {
 	const [modalOpen, setModalOpen] = useState(false);
@@ -12,7 +13,7 @@ export default function Home() {
 
 	useEffect(() => {
 		const q = query(collection(fsService, 'posts'), orderBy('metadata.createdAt', 'desc'));
-		onSnapshot(q, (querySnapshot) => {
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
 			if (querySnapshot.metadata.hasPendingWrites) {
 				return;
 			}
@@ -24,6 +25,8 @@ export default function Home() {
 			});
 			setPosts(postsArr);
 		});
+		
+		return () => unsubscribe();
 	}, []);
 
 	const openModal = () => setModalOpen(true);
@@ -32,10 +35,12 @@ export default function Home() {
 	return (
 		<>
 			<Dashboard openModal={openModal} currentPage="home">
-				<Typography sx={{ fontWeight: 700, fontSize: 27, mb: 3.5 }}>피드</Typography>
-				{posts.map((post) => (
-					<PostCard key={post.id} postObj={post} />
-				))}
+				<Box>
+					<Typography sx={{ fontWeight: 700, fontSize: 27, mb: 3.5 }}>피드</Typography>
+					{posts.map((post) => (
+						<PostCard key={post.id} postObj={post} />
+					))}
+				</Box>
 			</Dashboard>
 			<CreateNewPostModal modalOpen={modalOpen} closeModal={closeModal} />
 		</>

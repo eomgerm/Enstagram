@@ -79,11 +79,11 @@ export default function PostCard({ postObj }) {
 	} = postObj;
 	const { id: placeID, text: locationText } = location;
 
-	const getElapsedText = () => {
-		const createdAtDate = createdAt.toDate();
+	const getElapsedText = (timeStamp) => {
+		const date = timeStamp.toDate();
 		const now = new Date();
-		const elapsed = now - createdAtDate;
-		if (elapsed <= 0) {
+		const elapsed = now - date;
+		if (elapsed < SECOND) {
 			return '방금 전';
 		} else if (elapsed <= MINUTE) {
 			return `${Math.floor(elapsed / SECOND)}초 전`;
@@ -103,7 +103,6 @@ export default function PostCard({ postObj }) {
 		setAnchorEl(null);
 	};
 
-	const elapsedText = getElapsedText();
 	const googleMapURL = placeID && `https://www.google.com/maps/place/?q=place_id:${placeID}`;
 
 	const isOwner = creatorUID === userObj.uid;
@@ -123,7 +122,7 @@ export default function PostCard({ postObj }) {
 				avatar={
 					<Avatar
 						src={creatorPhotoURL}
-						sx={{ width: 45, height: 45, border: 2, borderColor: 'grey.300' }}
+						sx={{ width: 40, height: 40, border: 1, borderColor: 'grey.300' }}
 					/>
 				}
 				action={
@@ -171,7 +170,7 @@ export default function PostCard({ postObj }) {
 				}}
 			>
 				<Typography>{bodyText}</Typography>
-				<Typography sx={{ fontSize: 10, color: 'grey.500', mt: 1 }}>{elapsedText}</Typography>
+				<Typography sx={{ fontSize: 10, color: 'grey.500', mt: 1 }}>{getElapsedText(createdAt)}{edited && ` · 수정됨: ${getElapsedText(editedAt)}`} </Typography>
 			</CardContent>
 			<CardActions sx={{ px: 2.5, pb: 2.5 }}>
 				<Avatar

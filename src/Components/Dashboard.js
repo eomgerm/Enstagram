@@ -71,15 +71,21 @@ export default function Dashboard({ openModal, currentPage, children }) {
 					</Container>
 					<Stack direction="row" spacing={6} sx={{ justifyContent: 'center', mt: 4, mb: 4 }}>
 						<Box sx={{ display: 'flex', textAlign: 'center', flexDirection: 'column' }}>
-							<Typography sx={{ fontSize: 14, fontWeight: 600 }}>{posts}</Typography>
+							<Typography sx={{ fontSize: 14, fontWeight: 600, color: 'black' }}>
+								{posts}
+							</Typography>
 							<Typography sx={{ fontSize: 10, color: 'grey.500' }}>게시물</Typography>
 						</Box>
 						<Box sx={{ display: 'flex', textAlign: 'center', flexDirection: 'column' }}>
-							<Typography sx={{ fontSize: 14, fontWeight: 600 }}>{followers.length}</Typography>
+							<Typography sx={{ fontSize: 14, fontWeight: 600, color: 'black' }}>
+								{followers.length}
+							</Typography>
 							<Typography sx={{ fontSize: 10, color: 'grey.500' }}>팔로워</Typography>
 						</Box>
 						<Box sx={{ display: 'flex', textAlign: 'center', flexDirection: 'column' }}>
-							<Typography sx={{ fontSize: 14, fontWeight: 600 }}>{followings.length}</Typography>
+							<Typography sx={{ fontSize: 14, fontWeight: 600, color: 'black' }}>
+								{followings.length}
+							</Typography>
 							<Typography sx={{ fontSize: 10, color: 'grey.500' }}>팔로잉</Typography>
 						</Box>
 					</Stack>

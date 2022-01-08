@@ -10,6 +10,7 @@ import Settings from './Pages/Settings';
 import GoogleSignUp from './Pages/GoogleSignUp';
 import { UserContext } from './UserContext';
 import Profile from './Pages/Profile';
+import EditProfile from './Pages/EditProfile';
 
 export default function AppRouter({ isLoggedIn }) {
 	const [userObj] = useContext(UserContext);
@@ -24,6 +25,7 @@ export default function AppRouter({ isLoggedIn }) {
 							<Route exact path="/home" element={<Home />} />
 							<Route exact path="/direct" element={<Direct />} />
 							<Route exact path="/settings" element={<Settings />} />
+						  <Route exact path ='/edit' element={<EditProfile/>} />
 						</>
 					) : (
 						<Route path="/" element={<Loading />} />
