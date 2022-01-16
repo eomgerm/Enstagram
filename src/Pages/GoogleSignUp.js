@@ -88,13 +88,16 @@ export default function GoogleSignUp() {
 			uid: user.uid,
 			photoURL: user.photoURL,
 			posts: 0,
-			followers: 0,
-			followings: 0,
+			followers: [],
+			followings: [],
 			searchKeys,
 			description: [],
 			recentSearch: [],
+			website: '',
+			phoneNumber: '',
+			gender: '',
 		};
-		await setDoc(doc(userInfoRef, user.uid), userInfo);
+		await setDoc(doc(userInfoRef, user.uid), userInfo, { merge: true });
 		setUserObj(userInfo);
 		navigate('/home');
 	};

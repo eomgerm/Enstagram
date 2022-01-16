@@ -54,9 +54,13 @@ export default function Auth() {
 	};
 
 	const handleClickGoogleLogin = async () => {
-		const provider = new GoogleAuthProvider();
-		await signInWithPopup(authService, provider);
-		navigate('/google-login');
+		try {
+			const provider = new GoogleAuthProvider();
+			await signInWithPopup(authService, provider);
+			navigate('/google-login');
+		} catch (e) {
+			return;
+		}
 	};
 
 	return (
